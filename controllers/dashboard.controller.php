@@ -1,0 +1,28 @@
+<?php
+class DashBoardController extends MainController
+{
+	public $login_required = true;
+	public $permission_required = 'dashboard';
+
+	public function index()
+	{
+		$this->title = SYS_NAME . ' - Dashboard';
+
+		if (!$this->logged_in) {
+			$this->logout();
+
+			$this->goto_login();
+
+			return;
+		}
+
+		$parametros = (func_num_args() >= 1) ? func_get_arg(0) : array();
+
+		$modelo = $this->load_model('dashboard/dashboard');
+		
+		// Dashboard simplificado - sem empresas e parceiros
+		$conteudo = ABSPATH . '/views/dashboard/dashboard.view.php';
+
+		require ABSPATH . '/views/painel/painel.view.php';
+	}
+}
