@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 192.168.3.90:3306
--- Tempo de geração: 31-Out-2025 às 07:12
+-- Tempo de geração: 31-Out-2025 às 10:55
 -- Versão do servidor: 8.0.43-0ubuntu0.24.04.1
 -- versão do PHP: 8.2.12
 
@@ -49,10 +49,11 @@ CREATE TABLE `tblArquivo` (
 --
 
 CREATE TABLE `tblCredencial` (
-  `id` char(36) NOT NULL,
+  `id` int NOT NULL,
   `idEvento` int NOT NULL,
   `idLote` char(36) NOT NULL,
   `idPessoa` char(36) DEFAULT NULL,
+  `idUsuarioCadastro` int DEFAULT NULL,
   `docPessoa` varchar(255) DEFAULT NULL,
   `nomeCredencial` varchar(100) NOT NULL,
   `codigoCredencial` text NOT NULL,
@@ -72,7 +73,7 @@ CREATE TABLE `tblCredencial` (
 --
 
 CREATE TABLE `tblCredencialPeriodo` (
-  `id` char(36) NOT NULL,
+  `id` int NOT NULL,
   `idEvento` int NOT NULL,
   `idCredencial` char(36) NOT NULL,
   `dataInicio` date NOT NULL,
@@ -117,6 +118,15 @@ CREATE TABLE `tblEmail` (
   `dataEdicao` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Extraindo dados da tabela `tblEmail`
+--
+
+INSERT INTO `tblEmail` (`id`, `idPessoa`, `email`, `status`, `dataCriacao`, `dataEdicao`) VALUES
+(1, 1, 'superadmin@gmail.com', 'T', '2025-10-31 00:05:49', '2025-10-31 06:23:59'),
+(2, 2, 'admin@gmail.com', 'T', '2025-10-31 00:05:49', '2025-10-31 06:23:59'),
+(3, 3, 'usuario@gmail.com', 'T', '2025-10-31 00:05:49', '2025-10-31 06:23:59');
+
 -- --------------------------------------------------------
 
 --
@@ -150,7 +160,7 @@ CREATE TABLE `tblEndereco` (
 --
 
 CREATE TABLE `tblEntradas` (
-  `id` char(36) NOT NULL,
+  `id` int NOT NULL,
   `idEvento` int DEFAULT NULL,
   `idPessoa` char(36) DEFAULT NULL,
   `idCredencial` char(36) DEFAULT NULL,
@@ -175,7 +185,6 @@ CREATE TABLE `tblEntradas` (
 CREATE TABLE `tblEvento` (
   `id` int NOT NULL,
   `idCategoria` int NOT NULL,
-  `idEmpresa` int NOT NULL,
   `idLocal` int DEFAULT NULL,
   `nomeEvento` varchar(100) NOT NULL,
   `observacao` varchar(255) DEFAULT NULL,
@@ -189,6 +198,13 @@ CREATE TABLE `tblEvento` (
   `dataEdicao` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `aprovado` enum('T','F') DEFAULT 'F'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Extraindo dados da tabela `tblEvento`
+--
+
+INSERT INTO `tblEvento` (`id`, `idCategoria`, `idLocal`, `nomeEvento`, `observacao`, `dataInicio`, `dataFim`, `licenca`, `dataInicioCredenciamento`, `dataFimCredenciamento`, `status`, `dataCadastro`, `dataEdicao`, `aprovado`) VALUES
+(1, 2, 1, 'TESTE', NULL, '2025-10-30', '2025-11-07', NULL, '2025-10-30', '2025-11-07', 'T', '2025-10-31 06:57:15', '2025-10-31 06:57:20', 'T');
 
 -- --------------------------------------------------------
 
@@ -205,6 +221,14 @@ CREATE TABLE `tblEventoCategoria` (
   `dataEdicao` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Extraindo dados da tabela `tblEventoCategoria`
+--
+
+INSERT INTO `tblEventoCategoria` (`id`, `nomeCategoria`, `observacao`, `status`, `dataCadastro`, `dataEdicao`) VALUES
+(1, 'SHOW', NULL, 'T', '2025-10-31 06:50:05', '2025-10-31 06:50:05'),
+(2, 'RODEIO', NULL, 'T', '2025-10-31 06:50:05', '2025-10-31 06:50:27');
+
 -- --------------------------------------------------------
 
 --
@@ -220,18 +244,17 @@ CREATE TABLE `tblEventoComponentes` (
   `qtdLeitoresFaciais` int DEFAULT '0',
   `credenciaisImpressas` enum('S','N') DEFAULT 'N',
   `qtdLotesCredenciais` int DEFAULT '0',
-  `controleEstoque` enum('S','N') DEFAULT 'N',
-  `integracaoSympla` enum('S','N') DEFAULT 'N',
-  `integracaoQ2` enum('S','N') DEFAULT 'N',
-  `integracaoTicket360` enum('S','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'N',
   `dataCadastro` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `dataEdicao` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `integracaoTotalAcesso` enum('S','N') DEFAULT 'N',
-  `integracaoWhatsapp` enum('S','N') DEFAULT 'N',
-  `marcaTerminal` text,
-  `marcaLeitor` text,
-  `sistemaWhats` text
+  `marcaLeitor` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Extraindo dados da tabela `tblEventoComponentes`
+--
+
+INSERT INTO `tblEventoComponentes` (`id`, `idEvento`, `qtdTerminais`, `qtdSetores`, `usaLeitorFacial`, `qtdLeitoresFaciais`, `credenciaisImpressas`, `qtdLotesCredenciais`, `dataCadastro`, `dataEdicao`, `marcaLeitor`) VALUES
+(1, 1, 5, 10, 'S', 1, 'N', 5, '2025-10-31 07:18:53', '2025-10-31 07:24:30', '{}');
 
 -- --------------------------------------------------------
 
@@ -256,6 +279,13 @@ CREATE TABLE `tblEventoLocal` (
   `dataEdicao` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Extraindo dados da tabela `tblEventoLocal`
+--
+
+INSERT INTO `tblEventoLocal` (`id`, `nomeOficial`, `cep`, `logradouro`, `numero`, `bairro`, `cidade`, `estado`, `complemento`, `latitude`, `longitude`, `status`, `dataCadastro`, `dataEdicao`) VALUES
+(1, 'TESTE', '14750000', 'Avenida das Pitangueiras', '41', 'Centro', 'Pitangueiras', 'SP', '', '', '', 'T', '2025-10-31 06:52:42', '2025-10-31 06:52:42');
+
 -- --------------------------------------------------------
 
 --
@@ -263,7 +293,7 @@ CREATE TABLE `tblEventoLocal` (
 --
 
 CREATE TABLE `tblHistorico` (
-  `id` char(36) NOT NULL,
+  `id` int NOT NULL,
   `idEvento` int NOT NULL,
   `idReferencia` char(36) DEFAULT NULL,
   `tipoReferencia` enum('EVENTO','SETOR','TERMINAL','LEITOR','CREDENCIAL','LOTE') NOT NULL,
@@ -298,14 +328,13 @@ CREATE TABLE `tblHistoricoToken` (
 --
 
 CREATE TABLE `tblLeitor` (
-  `id` char(36) NOT NULL,
+  `id` int NOT NULL,
   `idEvento` int NOT NULL,
   `idSetor` char(36) DEFAULT NULL,
   `idTerminal` char(36) DEFAULT NULL,
   `idPadrao` char(36) DEFAULT NULL,
   `nomeLeitor` varchar(100) DEFAULT NULL,
   `observacao` varchar(255) DEFAULT NULL,
-  `marca` varchar(100) DEFAULT NULL,
   `ip` varchar(39) NOT NULL,
   `usuario` varchar(100) DEFAULT NULL,
   `senha` varchar(100) DEFAULT NULL,
@@ -320,6 +349,13 @@ CREATE TABLE `tblLeitor` (
   `dataEdicao` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Extraindo dados da tabela `tblLeitor`
+--
+
+INSERT INTO `tblLeitor` (`id`, `idEvento`, `idSetor`, `idTerminal`, `idPadrao`, `nomeLeitor`, `observacao`, `ip`, `usuario`, `senha`, `deviceId`, `serverId`, `serverUrl`, `session`, `condicao`, `status`, `configurado`, `dataCadastro`, `dataEdicao`) VALUES
+(1, 1, '1', '1', NULL, 'testinho', '', '192.168.3.59', 'teste', 'teste', NULL, NULL, NULL, NULL, 'OFF', 'T', 'F', '2025-10-31 07:39:28', '2025-10-31 07:39:28');
+
 -- --------------------------------------------------------
 
 --
@@ -327,7 +363,7 @@ CREATE TABLE `tblLeitor` (
 --
 
 CREATE TABLE `tblLeitorFoto` (
-  `id` char(36) NOT NULL,
+  `id` int NOT NULL,
   `idEvento` int NOT NULL,
   `idLeitor` char(36) NOT NULL,
   `idArquivo` char(36) NOT NULL,
@@ -362,7 +398,7 @@ CREATE TABLE `tblLog` (
 --
 
 CREATE TABLE `tblLote` (
-  `id` char(36) NOT NULL,
+  `id` int NOT NULL,
   `idEvento` int NOT NULL,
   `nomeLote` varchar(100) NOT NULL,
   `observacao` varchar(255) DEFAULT NULL,
@@ -379,6 +415,13 @@ CREATE TABLE `tblLote` (
   `dataEdicao` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Extraindo dados da tabela `tblLote`
+--
+
+INSERT INTO `tblLote` (`id`, `idEvento`, `nomeLote`, `observacao`, `permiteDuplicidade`, `autonumeracao`, `numeroLetras`, `qtdDigitos`, `tipoCodigo`, `tipoCredencial`, `permiteAcessoFacial`, `permiteImpressao`, `status`, `dataCadastro`, `dataEdicao`) VALUES
+(1, 1, 'TESTE1', '', 0, 0, NULL, NULL, 'BARRAS_1D', 'PAPEL', 1, 0, 'T', '2025-10-31 07:40:20', '2025-10-31 07:55:37');
+
 -- --------------------------------------------------------
 
 --
@@ -386,7 +429,7 @@ CREATE TABLE `tblLote` (
 --
 
 CREATE TABLE `tblLotePeriodo` (
-  `id` char(36) NOT NULL,
+  `id` int NOT NULL,
   `idEvento` int NOT NULL,
   `idLote` char(36) NOT NULL,
   `dataInicio` date NOT NULL,
@@ -397,6 +440,14 @@ CREATE TABLE `tblLotePeriodo` (
   `dataCadastro` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `dataEdicao` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Extraindo dados da tabela `tblLotePeriodo`
+--
+
+INSERT INTO `tblLotePeriodo` (`id`, `idEvento`, `idLote`, `dataInicio`, `dataTermino`, `horaInicio`, `horaTermino`, `status`, `dataCadastro`, `dataEdicao`) VALUES
+(4, 1, '1', '2025-10-30', '2025-11-06', '11:11:00', '11:11:00', 'T', '2025-10-31 07:54:51', '2025-10-31 07:54:51'),
+(5, 1, '1', '2025-11-07', '2025-11-12', '22:22:00', '22:22:00', 'T', '2025-10-31 07:54:51', '2025-10-31 07:54:51');
 
 -- --------------------------------------------------------
 
@@ -411,6 +462,15 @@ CREATE TABLE `tblPermissao` (
   `dataCriacao` datetime DEFAULT CURRENT_TIMESTAMP,
   `dataEdicao` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `tblPermissao`
+--
+
+INSERT INTO `tblPermissao` (`id`, `permissao`, `status`, `dataCriacao`, `dataEdicao`) VALUES
+(1, 'SUPERADMIN', 'T', '2025-10-31 00:13:43', '2025-10-31 06:23:39'),
+(2, 'ADMIN', 'T', '2025-10-31 00:13:43', '2025-10-31 00:13:43'),
+(3, 'USUARIO', 'T', '2025-10-31 00:13:43', '2025-10-31 00:13:43');
 
 -- --------------------------------------------------------
 
@@ -431,6 +491,15 @@ CREATE TABLE `tblPessoa` (
   `dataEdicao` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Extraindo dados da tabela `tblPessoa`
+--
+
+INSERT INTO `tblPessoa` (`id`, `nome`, `sobrenome`, `apelido`, `genero`, `dataNascimento`, `observacoes`, `status`, `dataCriacao`, `dataEdicao`) VALUES
+(1, 'SUPERADMIN', '', NULL, 'Masculino', NULL, NULL, 'T', '2025-10-31 00:12:13', '2025-10-31 06:20:48'),
+(2, 'ADMIN', NULL, NULL, 'Masculino', NULL, NULL, 'T', '2025-10-31 06:21:02', '2025-10-31 06:21:02'),
+(3, 'USUARIO', NULL, NULL, 'Masculino', NULL, NULL, 'T', '2025-10-31 06:21:13', '2025-10-31 06:21:13');
+
 -- --------------------------------------------------------
 
 --
@@ -438,7 +507,7 @@ CREATE TABLE `tblPessoa` (
 --
 
 CREATE TABLE `tblRelCredencialSetor` (
-  `id` char(36) NOT NULL,
+  `id` int NOT NULL,
   `idEvento` int NOT NULL,
   `idCredencial` char(36) NOT NULL,
   `idSetor` char(36) NOT NULL,
@@ -457,7 +526,7 @@ CREATE TABLE `tblRelCredencialSetor` (
 --
 
 CREATE TABLE `tblRelLoteSetor` (
-  `id` char(36) NOT NULL,
+  `id` int NOT NULL,
   `idEvento` int NOT NULL,
   `idLote` char(36) NOT NULL,
   `idSetor` char(36) NOT NULL,
@@ -469,6 +538,13 @@ CREATE TABLE `tblRelLoteSetor` (
   `dataEdicao` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Extraindo dados da tabela `tblRelLoteSetor`
+--
+
+INSERT INTO `tblRelLoteSetor` (`id`, `idEvento`, `idLote`, `idSetor`, `permiteSaida`, `permiteReentrada`, `tipoReentrada`, `status`, `dataCadastro`, `dataEdicao`) VALUES
+(3, 1, '1', '1', 0, 0, NULL, 'T', '2025-10-31 07:50:09', '2025-10-31 07:50:09');
+
 -- --------------------------------------------------------
 
 --
@@ -476,7 +552,7 @@ CREATE TABLE `tblRelLoteSetor` (
 --
 
 CREATE TABLE `tblSetor` (
-  `id` char(36) NOT NULL,
+  `id` int NOT NULL,
   `idEvento` int NOT NULL,
   `nomeSetor` varchar(100) NOT NULL,
   `observacao` varchar(255) DEFAULT NULL,
@@ -484,6 +560,13 @@ CREATE TABLE `tblSetor` (
   `dataCadastro` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `dataEdicao` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Extraindo dados da tabela `tblSetor`
+--
+
+INSERT INTO `tblSetor` (`id`, `idEvento`, `nomeSetor`, `observacao`, `status`, `dataCadastro`, `dataEdicao`) VALUES
+(1, 1, 'TESTE 1', NULL, 'T', '2025-10-31 07:07:41', '2025-10-31 07:07:41');
 
 -- --------------------------------------------------------
 
@@ -508,13 +591,12 @@ CREATE TABLE `tblTelefone` (
 --
 
 CREATE TABLE `tblTerminal` (
-  `id` char(36) NOT NULL,
+  `id` int NOT NULL,
   `idEvento` int NOT NULL,
   `idSetor` char(36) DEFAULT NULL,
   `idPadrao` char(36) DEFAULT NULL,
   `nomeTerminal` varchar(100) DEFAULT NULL,
   `observacao` varchar(255) DEFAULT NULL,
-  `marca` varchar(100) DEFAULT NULL,
   `tipo` enum('ENTRADA','SAIDA','AMBOS') NOT NULL DEFAULT 'ENTRADA',
   `prefixoSaida` varchar(10) DEFAULT NULL,
   `ip` varchar(39) DEFAULT NULL,
@@ -526,6 +608,13 @@ CREATE TABLE `tblTerminal` (
   `dataCadastro` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `dataEdicao` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Extraindo dados da tabela `tblTerminal`
+--
+
+INSERT INTO `tblTerminal` (`id`, `idEvento`, `idSetor`, `idPadrao`, `nomeTerminal`, `observacao`, `tipo`, `prefixoSaida`, `ip`, `deviceId`, `serverId`, `serverUrl`, `condicao`, `status`, `dataCadastro`, `dataEdicao`) VALUES
+(1, 1, '1', NULL, 'yhfghfgsr432', NULL, 'ENTRADA', NULL, NULL, NULL, NULL, NULL, 'OFF', 'T', '2025-10-31 07:32:10', '2025-10-31 07:37:05');
 
 -- --------------------------------------------------------
 
@@ -564,6 +653,15 @@ CREATE TABLE `tblUsuario` (
   `usuario` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Extraindo dados da tabela `tblUsuario`
+--
+
+INSERT INTO `tblUsuario` (`id`, `idPessoa`, `idPermissao`, `senha`, `sessionID`, `token`, `status`, `dataCriacao`, `dataEdicao`, `usuario`) VALUES
+(1, 1, 1, '$2a$08$xdO4hS3Wv50tsBndFP32R.LivUWh39a0eg3h8HXCiqH7.q7P.zE4W', '0qd5r6jcjss5b001enihqvu3jb', NULL, 'T', '2025-10-31 00:13:03', '2025-10-31 09:24:52', 'super.admin'),
+(2, 2, 2, '$2a$08$xdO4hS3Wv50tsBndFP32R.LivUWh39a0eg3h8HXCiqH7.q7P.zE4W', '', NULL, 'T', '2025-10-31 03:13:03', '2025-10-31 09:24:27', 'admin'),
+(3, 3, 3, '$2a$08$xdO4hS3Wv50tsBndFP32R.LivUWh39a0eg3h8HXCiqH7.q7P.zE4W', '', NULL, 'T', '2025-10-31 03:21:53', '2025-10-31 09:24:40', 'usuario');
+
 -- --------------------------------------------------------
 
 --
@@ -571,22 +669,22 @@ CREATE TABLE `tblUsuario` (
 -- (Veja abaixo para a view atual)
 --
 CREATE TABLE `vwEventos` (
-`idEvento` int
-,`nomeEvento` varchar(100)
-,`observacaoEvento` varchar(255)
-,`dataInicio` date
-,`dataFim` date
-,`licenca` text
-,`dataInicioCredenciamento` date
-,`dataFimCredenciamento` date
-,`statusEvento` enum('T','F')
+`aprovado` enum('T','F')
 ,`dataCadastroEvento` timestamp
 ,`dataEdicaoEvento` timestamp
-,`aprovado` enum('T','F')
+,`dataFim` date
+,`dataFimCredenciamento` date
+,`dataInicio` date
+,`dataInicioCredenciamento` date
 ,`idCategoria` int
-,`nomeCategoria` varchar(100)
-,`nomeLocal` varchar(255)
+,`idEvento` int
 ,`idLocal` int
+,`licenca` text
+,`nomeCategoria` varchar(100)
+,`nomeEvento` varchar(100)
+,`nomeLocal` varchar(255)
+,`observacaoEvento` varchar(255)
+,`statusEvento` enum('T','F')
 );
 
 -- --------------------------------------------------------
@@ -596,20 +694,20 @@ CREATE TABLE `vwEventos` (
 -- (Veja abaixo para a view atual)
 --
 CREATE TABLE `vwLogin` (
-`id` int
-,`idUsuario` int
-,`usuario` varchar(100)
-,`nome` varchar(255)
-,`sobrenome` varchar(255)
-,`apelido` varchar(255)
+`apelido` varchar(255)
+,`cpf` varchar(255)
 ,`email` varchar(255)
+,`id` int
+,`idPermissao` bigint
+,`idUsuario` int
+,`nome` varchar(255)
+,`permissao` varchar(255)
 ,`senha` varchar(255)
 ,`sessionID` varchar(255)
+,`sobrenome` varchar(255)
 ,`STATUS` enum('T','F')
-,`cpf` varchar(255)
 ,`telefone` varchar(50)
-,`idPermissao` bigint
-,`permissao` varchar(255)
+,`usuario` varchar(100)
 );
 
 -- --------------------------------------------------------
@@ -619,21 +717,21 @@ CREATE TABLE `vwLogin` (
 -- (Veja abaixo para a view atual)
 --
 CREATE TABLE `vwUsuarios` (
-`idPessoa` int
-,`idUsuario` int
-,`usuario` varchar(100)
-,`nome` varchar(255)
-,`sobrenome` varchar(255)
-,`apelido` varchar(255)
-,`email` varchar(255)
-,`senha` varchar(255)
-,`sessionID` varchar(255)
-,`token` varchar(100)
-,`status` enum('T','F')
-,`idPermissao` int
-,`permissao` varchar(255)
+`apelido` varchar(255)
 ,`dataCriacao` datetime
 ,`dataEdicao` datetime
+,`email` varchar(255)
+,`idPermissao` int
+,`idPessoa` int
+,`idUsuario` int
+,`nome` varchar(255)
+,`permissao` varchar(255)
+,`senha` varchar(255)
+,`sessionID` varchar(255)
+,`sobrenome` varchar(255)
+,`status` enum('T','F')
+,`token` varchar(100)
+,`usuario` varchar(100)
 );
 
 -- --------------------------------------------------------
@@ -857,6 +955,18 @@ ALTER TABLE `tblArquivo`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `tblCredencial`
+--
+ALTER TABLE `tblCredencial`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `tblCredencialPeriodo`
+--
+ALTER TABLE `tblCredencialPeriodo`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `tblDocumento`
 --
 ALTER TABLE `tblDocumento`
@@ -866,7 +976,7 @@ ALTER TABLE `tblDocumento`
 -- AUTO_INCREMENT de tabela `tblEmail`
 --
 ALTER TABLE `tblEmail`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `tblEndereco`
@@ -875,27 +985,39 @@ ALTER TABLE `tblEndereco`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `tblEntradas`
+--
+ALTER TABLE `tblEntradas`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `tblEvento`
 --
 ALTER TABLE `tblEvento`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `tblEventoCategoria`
 --
 ALTER TABLE `tblEventoCategoria`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `tblEventoComponentes`
 --
 ALTER TABLE `tblEventoComponentes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `tblEventoLocal`
 --
 ALTER TABLE `tblEventoLocal`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `tblHistorico`
+--
+ALTER TABLE `tblHistorico`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
@@ -905,21 +1027,63 @@ ALTER TABLE `tblHistoricoToken`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `tblLeitor`
+--
+ALTER TABLE `tblLeitor`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `tblLeitorFoto`
+--
+ALTER TABLE `tblLeitorFoto`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `tblLog`
 --
 ALTER TABLE `tblLog`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `tblLote`
+--
+ALTER TABLE `tblLote`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `tblLotePeriodo`
+--
+ALTER TABLE `tblLotePeriodo`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT de tabela `tblPermissao`
 --
 ALTER TABLE `tblPermissao`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `tblPessoa`
 --
 ALTER TABLE `tblPessoa`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de tabela `tblRelCredencialSetor`
+--
+ALTER TABLE `tblRelCredencialSetor`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `tblRelLoteSetor`
+--
+ALTER TABLE `tblRelLoteSetor`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de tabela `tblSetor`
+--
+ALTER TABLE `tblSetor`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
@@ -927,6 +1091,12 @@ ALTER TABLE `tblPessoa`
 --
 ALTER TABLE `tblTelefone`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `tblTerminal`
+--
+ALTER TABLE `tblTerminal`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `tblToken`
@@ -938,7 +1108,7 @@ ALTER TABLE `tblToken`
 -- AUTO_INCREMENT de tabela `tblUsuario`
 --
 ALTER TABLE `tblUsuario`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
