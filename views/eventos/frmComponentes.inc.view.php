@@ -4,11 +4,6 @@ if (!defined('ABSPATH')) exit;
 $idEvento = decryptHash(chk_array($parametros, 1));
 $evento = $modelo->getEvento($idEvento);
 
-$selectedTerminals = [];
-if (!empty($componente['marcaTerminal'])) {
-    $selectedTerminals = explode(',', trim($componente['marcaTerminal'], '{}'));
-}
-
 $selectedLeitors = [];
 if (!empty($componente['marcaLeitor'])) {
     $selectedLeitors = explode(',', trim($componente['marcaLeitor'], '{}'));
@@ -45,21 +40,6 @@ $leitorOptions   = ['controlId' => 'ControlId', /* adicione outras se houver */]
                             value="<?php echo htmlentities(chk_array($componente, 'qtdLotesCredenciais')); ?>" min="0">
                     </div>
                 </div>
-            </div>
-
-            <!-- Terminais -->
-            <h5 class="mt-0 mb-3 text-secondary"><i class="fas fa-credit-card mr-1"></i> Terminais</h5>
-            <div class="row mb-4">
-                <div class="col-md-4 col-sm-6">
-                    <div class="form-group">
-                        <label for="qtdTerminais">Quantidade de Terminais</label>
-                        <input type="number" class="form-control" id="qtdTerminais" name="qtdTerminais"
-                            value="<?php echo htmlentities(chk_array($componente, 'qtdTerminais')); ?>" min="0">
-                    </div>
-                </div>
-
- 
-
             </div>
 
             <!-- Leitores Faciais -->

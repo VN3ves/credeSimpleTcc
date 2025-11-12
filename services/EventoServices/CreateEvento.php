@@ -3,7 +3,7 @@
 class CreateEvento extends MainModel
 {
 
-    public function createEvento($idCategoria, $idLocal, $nomeEvento, $observacao, $dataInicio, $dataFim, $licenca, $dataInicioCredenciamento, $dataFimCredenciamento)
+    public function createEvento($idCategoria, $idLocal, $nomeEvento, $observacao, $dataInicio, $dataFim)
     {
         if (empty($idCategoria) || empty($nomeEvento) || empty($dataInicio) || empty($dataFim)) {
             return false;
@@ -16,11 +16,7 @@ class CreateEvento extends MainModel
             'observacao' => $observacao,
             'dataInicio' => $dataInicio,
             'dataFim' => $dataFim,
-            'licenca' => $licenca,
-            'dataInicioCredenciamento' => $dataInicioCredenciamento,
-            'dataFimCredenciamento' => $dataFimCredenciamento,
-            'status' => 'F',
-            'aprovado' => 'T'
+            'status' => 'F'
         ));
 
         if (!$query) {

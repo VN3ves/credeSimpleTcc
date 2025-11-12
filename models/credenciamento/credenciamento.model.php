@@ -20,12 +20,13 @@ class CredenciamentoModel extends MainModel
 
 
         // Busca a pessoa pelo documento de qualquer forma  
-        $sql = "SELECT tblPessoa.* FROM tblPessoa 
+        $sql = "SELECT tblPessoa.*, tblArquivo.pathLocal as localFoto 
+        FROM tblPessoa 
         INNER JOIN tblDocumento ON tblPessoa.id = tblDocumento.idPessoa
+        LEFT JOIN tblArquivo ON tblPessoa.id = tblArquivo.idReferencia AND tblArquivo.tipoReferencia = 'PESSOA' AND tblArquivo.tipoArquivo = 'AVATAR'
         WHERE tblDocumento.documento LIKE ? AND (tblDocumento.tipo = 'CPF' OR tblDocumento.tipo = 'Passaporte')";
 
         $query = $this->db->query($sql, array("%$doc%"));
-
         $resultado = $query->fetch(PDO::FETCH_ASSOC);
 
         if ($resultado) {

@@ -22,7 +22,6 @@ $evento = $modelo->getEvento($idEvento);
 
 // Carrega as contagens
 $quantidadeLeitores = $modeloLeitores->getQuantidadeLeitores($idEvento);
-$quantidadeTerminais = $modeloTerminais->getQuantidadeTerminais($idEvento);
 $quantidadeSetores = $modeloSetores->getQuantidadeSetores($idEvento);
 $quantidadeCredenciais = 0; //$modeloCredenciais->getQuantidadeCredenciais($idEvento);
 $quantidadeIngressos = 0; //$modeloIngressos->getQuantidadeIngressos($idEvento);
@@ -64,22 +63,6 @@ $ultimosRegistros = [];// $modeloRegistros->getUltimosRegistrosEntrada($idEvento
                         </div>
                         <a href="<?php echo HOME_URI; ?>/eventos/index/setores/<?php echo encryptId($idEvento); ?>" class="small-box-footer">
                             Ver Setores <i class="fas fa-arrow-circle-right"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Quantidade de Terminais -->
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-success">
-                        <div class="inner">
-                            <h3><?php echo $quantidadeTerminais; ?></h3>
-                            <p>Terminais</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-desktop"></i>
-                        </div>
-                        <a href="<?php echo HOME_URI; ?>/eventos/index/terminais/<?php echo encryptId($idEvento); ?>" class="small-box-footer">
-                            Ver Terminais <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>
@@ -146,7 +129,6 @@ $ultimosRegistros = [];// $modeloRegistros->getUltimosRegistrosEntrada($idEvento
                                     <tr>
                                         <th>Data e Hora</th>
                                         <th>Credencial</th>
-                                        <th>Terminal</th>
                                         <th>Leitor Facial</th>
                                     </tr>
                                 </thead>
@@ -155,7 +137,6 @@ $ultimosRegistros = [];// $modeloRegistros->getUltimosRegistrosEntrada($idEvento
                                         <tr>
                                             <td><?php echo date('d/m/Y H:i:s', strtotime($registro['dataHora'])); ?></td>
                                             <td><?php echo htmlentities($registro['credencial']); ?></td>
-                                            <td><?php echo htmlentities($registro['terminal']); ?></td>
                                             <td><?php echo htmlentities($registro['leitorFacial']); ?></td>
                                         </tr>
                                     <?php endforeach; ?>

@@ -7,7 +7,6 @@ class LeitoresModel extends MainModel
     public $eventoDB;
 
     private $idSetor;
-    private $idTerminal;
     private $nomeLeitor;
     private $ip;
     private $usuario;
@@ -41,7 +40,6 @@ class LeitoresModel extends MainModel
         $this->form_data = array();
 
         $this->idSetor = isset($_POST['idSetor']) ? $_POST['idSetor'] : null;
-        $this->idTerminal = isset($_POST['idTerminal']) ? $_POST['idTerminal'] : null;
         $this->nomeLeitor = isset($_POST['nomeLeitor']) ? $_POST['nomeLeitor'] : null;
         $this->ip = isset($_POST['ip']) ? $_POST['ip'] : null;
         $this->usuario = isset($_POST['usuario']) ? $_POST['usuario'] : null;
@@ -67,7 +65,6 @@ class LeitoresModel extends MainModel
 
         $this->form_data = array(
             'idSetor' => $this->idSetor,
-            'idTerminal' => $this->idTerminal,
             'nomeLeitor' => $this->nomeLeitor,
             'ip' => $this->ip,
             'usuario' => $this->usuario,

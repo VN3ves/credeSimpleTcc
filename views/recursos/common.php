@@ -1,4 +1,5 @@
 <?php
+// common.php para views de recursos
 function formatarStatus($status) {
     $statusMap = [
         'T' => '<span class="badge badge-success">Ativo</span>',

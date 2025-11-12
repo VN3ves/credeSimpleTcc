@@ -11,7 +11,6 @@ class CreateComponente extends MainModel
 
         $query = $this->db->insert('tblEventoComponentes', array(
             'idEvento' => $dados['idEvento'],
-            'qtdTerminais' => $dados['qtdTerminais'],
             'qtdSetores' => $dados['qtdSetores'],
             'usaLeitorFacial' => $dados['usaLeitorFacial'],
             'qtdLeitoresFaciais' => $dados['qtdLeitoresFaciais'],

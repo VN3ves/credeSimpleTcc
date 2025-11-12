@@ -3,20 +3,14 @@ class LotesModel extends MainModel
 {
     public $form_data;
     public $form_msg;
+    public $toast_message;
     public $db;
 
     private $id;
     private $idEvento;
     private $nomeLote;
     private $observacao;
-    private $permiteDuplicidade;
-    private $autonumeracao;
-    private $numeroLetras;
-    private $qtdDigitos;
-    private $tipoCodigo;
-    private $tipoCredencial;
-    private $permiteAcessoFacial;
-    private $permiteImpressao;
+    private $qtdTempoEntreLeitura;
     private $status;
 
     private $idLote;
@@ -46,25 +40,12 @@ class LotesModel extends MainModel
         // Captura os dados do formulário
         $this->nomeLote = isset($_POST["nomeLote"]) ? $_POST["nomeLote"] : null;
         $this->observacao = isset($_POST["observacao"]) ? $_POST["observacao"] : null;
-        $this->permiteDuplicidade = isset($_POST["permiteDuplicidade"]) ? 1 : 0;
-        $this->autonumeracao = isset($_POST["autonumeracao"]) ? 1 : 0;
-        $this->numeroLetras = isset($_POST["numeroLetras"]) ? $_POST["numeroLetras"] : null;
-        $this->qtdDigitos = isset($_POST["qtdDigitos"]) ? $_POST["qtdDigitos"] : null;
-        $this->tipoCodigo = isset($_POST["tipoCodigo"]) ? $_POST["tipoCodigo"] : null;
-        $this->tipoCredencial = isset($_POST["tipoCredencial"]) ? $_POST["tipoCredencial"] : null;
+        $this->qtdTempoEntreLeitura = isset($_POST["qtdTempoEntreLeitura"]) ? $_POST["qtdTempoEntreLeitura"] : null;
         $this->idEvento = isset($_POST["idEvento"]) ? $_POST["idEvento"] : null;
-        $this->permiteAcessoFacial = isset($_POST["permiteAcessoFacial"]) ? 1 : 0;
-        $this->permiteImpressao = isset($_POST["permiteImpressao"]) ? 1 : 0;
 
         // Validações
         if (empty($this->nomeLote)) {
             $this->erro .= "<br>Preencha o nome do lote.";
-        }
-        if (empty($this->tipoCodigo)) {
-            $this->erro .= "<br>Selecione o tipo de código.";
-        }
-        if (empty($this->tipoCredencial)) {
-            $this->erro .= "<br>Selecione o tipo de credencial.";
         }
         if (empty($this->idEvento)) {
             $this->erro .= "<br>ID do evento não encontrado.";
@@ -73,15 +54,8 @@ class LotesModel extends MainModel
         // Prepara os dados para o formulário
         $this->form_data['nomeLote'] = $this->nomeLote;
         $this->form_data['observacao'] = $this->observacao;
-        $this->form_data['permiteDuplicidade'] = $this->permiteDuplicidade;
-        $this->form_data['autonumeracao'] = $this->autonumeracao;
-        $this->form_data['numeroLetras'] = $this->numeroLetras;
-        $this->form_data['qtdDigitos'] = $this->qtdDigitos;
-        $this->form_data['tipoCodigo'] = $this->tipoCodigo;
-        $this->form_data['tipoCredencial'] = $this->tipoCredencial;
+        $this->form_data['qtdTempoEntreLeitura'] = $this->qtdTempoEntreLeitura;
         $this->form_data['idEvento'] = $this->idEvento;
-        $this->form_data['permiteAcessoFacial'] = $this->permiteAcessoFacial;
-        $this->form_data['permiteImpressao'] = $this->permiteImpressao;
 
         if (!empty($this->erro)) {
             $this->form_msg = $this->controller->Messages->error('<strong>Os seguintes erros foram encontrados:</strong>' . $this->erro);
@@ -158,8 +132,8 @@ class LotesModel extends MainModel
         } else {
             $this->form_msg = $this->controller->Messages->success('Lote cadastrado com sucesso.');
             $hash = encryptId($this->db->lastInsertId());
-            $this->form_msg .= '<meta http-equiv="refresh" content="0; url=' . HOME_URI . '/lotes/index/editarLote/' . $hash . '">';
-            $this->form_msg .= '<script type="text/javascript">window.location.href = "' . HOME_URI . '/lotes/index/editarLote/' . $hash . '";</script>';
+            $this->form_msg .= '<meta http-equiv="refresh" content="0; url=' . HOME_URI . '/lotes' . '">';
+            $this->form_msg .= '<script type="text/javascript">window.location.href = "' . HOME_URI . '/lotes' . '";</script>';
 
             $this->form_data = null;
             return;
@@ -192,8 +166,8 @@ class LotesModel extends MainModel
                 return;
             } else {
                 $this->form_msg = $this->controller->Messages->success('Lote editado com sucesso.');
-                $this->form_msg .= '<meta http-equiv="refresh" content="0; url=' . HOME_URI . '/lotes/index/editarLote/' . chk_array($this->parametros, 1) . '">';
-                $this->form_msg .= '<script type="text/javascript">window.location.href = "' . HOME_URI . '/lotes/index/editarLote/' . chk_array($this->parametros, 1) . '";</script>';
+                $this->form_msg .= '<meta http-equiv="refresh" content="0; url=' . HOME_URI . '/lotes' . '">';
+                $this->form_msg .= '<script type="text/javascript">window.location.href = "' . HOME_URI . '/lotes' . '";</script>';
 
                 return;
             }
@@ -234,8 +208,8 @@ class LotesModel extends MainModel
 
             $this->form_msg = $this->controller->Messages->success('Relações do lote salvas com sucesso.');
             $hash = encryptId($id);
-            $this->form_msg .= '<meta http-equiv="refresh" content="0; url=' . HOME_URI . '/lotes/index/relacoesLote/' . $hash . '">';
-            $this->form_msg .= '<script type="text/javascript">window.location.href = "' . HOME_URI . '/lotes/index/relacoesLote/' . $hash . '";</script>';
+            $this->form_msg .= '<meta http-equiv="refresh" content="0; url=' . HOME_URI . '/lotes' . '">';
+            $this->form_msg .= '<script type="text/javascript">window.location.href = "' . HOME_URI . '/lotes' . '";</script>';
 
             return;
         }
@@ -362,24 +336,7 @@ class LotesModel extends MainModel
         return $getSetoresLoteService->getSetoresLote($idLote);
     }
 
-    /**
-     * Obtém todos os tipos de credencial
-     */
-    public function getTiposCredencial()
-    {
-        $TiposCredencial = array('PAPEL', 'CARTAO_PVC', 'PULSEIRA_PVC', 'PULSEIRA_TYVEK');
-        return $TiposCredencial;
-    }
 
-    /**
-     * Obtém todos os tipos de código
-     */
-    public function getTiposCodigo()
-    {
-        $TiposCodigo = array('BARRAS_1D', 'BARRAS_2D(QR_CODE)', 'BARRAS_2D(DATAMATRIZ)', 'MAGNETICO', 'RFID');
-        return $TiposCodigo;
-    }
-    
     /**
      * Obtém lotes disponíveis para um evento
      */
@@ -390,7 +347,6 @@ class LotesModel extends MainModel
             $sql = "SELECT 
                         l.id,
                         l.nomeLote as nome,
-                        l.tipoCredencial,
                         COUNT(c.id) as usada,
                         999999 as disponivel
                     FROM tblLote l
@@ -398,15 +354,14 @@ class LotesModel extends MainModel
                     WHERE l.idEvento = ? AND l.status = 'T'
                     GROUP BY l.id
                     ORDER BY l.nomeLote";
-                    
+
             $query = $this->db->query($sql, array($idEvento));
-            
+
             if (!$query) {
                 return array();
             }
-            
+
             return $query->fetchAll(PDO::FETCH_ASSOC);
-            
         } catch (Exception $e) {
             Log::error('Erro ao buscar lotes disponíveis: ' . $e->getMessage());
             return array();

@@ -13,10 +13,9 @@ class GetLeitor extends MainModel{
         }
 
         $query = $this->eventoDB->query('
-            SELECT l.*, s.nomeSetor, t.nomeTerminal 
+            SELECT l.*, s.nomeSetor
             FROM `tblLeitor` l
             LEFT JOIN `tblSetor` s ON s.id = l.idSetor
-            LEFT JOIN `tblTerminal` t ON t.id = l.idTerminal
             WHERE l.`id` = ?', 
             array($s_id)
         );

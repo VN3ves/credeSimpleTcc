@@ -3,9 +3,9 @@
 class UpdateEvento extends MainModel
 {
 
-    public function updateEvento($id, $idCategoria, $idLocal, $nomeEvento, $observacao, $dataInicio, $dataFim, $licenca, $dataInicioCredenciamento, $dataFimCredenciamento)
+    public function updateEvento($id, $idCategoria, $idLocal, $nomeEvento, $observacao, $dataInicio, $dataFim)
     {
-        if (empty($id) || empty($idCategoria) || empty($idLocal) || empty($nomeEvento) || empty($observacao) || empty($dataInicio) || empty($dataFim) || empty($licenca) || empty($dataInicioCredenciamento) || empty($dataFimCredenciamento)) {
+        if (empty($id) || empty($idCategoria) || empty($idLocal) || empty($nomeEvento) || empty($observacao) || empty($dataInicio) || empty($dataFim)) {
             return false;
         }
 
@@ -15,10 +15,7 @@ class UpdateEvento extends MainModel
             'nomeEvento' => $nomeEvento,
             'observacao' => $observacao,
             'dataInicio' => $dataInicio,
-            'dataFim' => $dataFim,
-            'licenca' => $licenca,
-            'dataInicioCredenciamento' => $dataInicioCredenciamento,
-            'dataFimCredenciamento' => $dataFimCredenciamento
+            'dataFim' => $dataFim
         ));
 
         if (!$query) {

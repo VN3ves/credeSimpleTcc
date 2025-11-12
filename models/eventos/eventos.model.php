@@ -10,9 +10,6 @@ class EventosModel extends MainModel
     private $idCategoria;
     private $dataInicio;
     private $dataFim;
-    private $licenca;
-    private $dataInicioCredenciamento;
-    private $dataFimCredenciamento;
     private $idLocal;
     private $observacao;
 
@@ -64,10 +61,7 @@ class EventosModel extends MainModel
         $this->idLocal = isset($_POST["idLocal"]) ? $_POST["idLocal"] : null;
         $this->dataInicio = isset($_POST["dataInicio"]) ? $_POST["dataInicio"] : null;
         $this->dataFim = isset($_POST["dataFim"]) ? $_POST["dataFim"] : null;
-        $this->dataInicioCredenciamento = isset($_POST["dataInicioCredenciamento"]) ? $_POST["dataInicioCredenciamento"] : null;
-        $this->dataFimCredenciamento = isset($_POST["dataFimCredenciamento"]) ? $_POST["dataFimCredenciamento"] : null;
         $this->observacao = isset($_POST["observacao"]) ? $_POST["observacao"] : null;
-        $this->licenca = isset($_POST["licenca"]) ? $_POST["licenca"] : null;
 
         // Dados para novo local se necessário
         $localData = isset($_POST["local"]) ? $_POST["local"] : array();
@@ -137,10 +131,7 @@ class EventosModel extends MainModel
         $this->form_data['idLocal'] = $this->idLocal;
         $this->form_data['dataInicio'] = $this->dataInicio;
         $this->form_data['dataFim'] = $this->dataFim;
-        $this->form_data['dataInicioCredenciamento'] = $this->dataInicioCredenciamento;
-        $this->form_data['dataFimCredenciamento'] = $this->dataFimCredenciamento;
         $this->form_data['observacao'] = $this->observacao;
-        $this->form_data['licenca'] = $this->licenca;
 
         if (!empty($this->erro)) {
             $this->form_msg = $this->controller->Messages->error('<strong>Os seguintes erros foram encontrados:</strong>' . $this->erro);
@@ -205,10 +196,7 @@ class EventosModel extends MainModel
                 chk_array($this->form_data, 'nomeEvento'),
                 chk_array($this->form_data, 'observacao'),
                 chk_array($this->form_data, 'dataInicio'),
-                chk_array($this->form_data, 'dataFim'),
-                chk_array($this->form_data, 'licenca'),
-                chk_array($this->form_data, 'dataInicioCredenciamento'),
-                chk_array($this->form_data, 'dataFimCredenciamento')
+                chk_array($this->form_data, 'dataFim')
             );
 
             if (!$query) {
@@ -234,9 +222,6 @@ class EventosModel extends MainModel
             chk_array($this->form_data, 'observacao'),
             chk_array($this->form_data, 'dataInicio'),
             chk_array($this->form_data, 'dataFim'),
-            chk_array($this->form_data, 'licenca'),
-            chk_array($this->form_data, 'dataInicioCredenciamento'),
-            chk_array($this->form_data, 'dataFimCredenciamento')
         );
 
         $idEvento = $this->db->lastInsertId();

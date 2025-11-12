@@ -10,7 +10,6 @@ class UpdateComponente extends MainModel
         }
 
         $query = $this->db->update('tblEventoComponentes', 'id', $id, array(
-            'qtdTerminais' => $dados['qtdTerminais'],
             'qtdSetores' => $dados['qtdSetores'],
             'usaLeitorFacial' => $dados['usaLeitorFacial'],
             'qtdLeitoresFaciais' => $dados['qtdLeitoresFaciais'],

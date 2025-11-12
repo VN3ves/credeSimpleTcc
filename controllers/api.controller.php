@@ -12,11 +12,5 @@ class ApiController extends MainController
     {
         // Construtor da classe pai
         parent::__construct();
-        $this->modeloImpressoes = $this->load_model('impressoes/impressoes');
-        $this->modeloEmpresas = $this->loadDefaultModel('EmpresasModel');
-        $this->modeloParceiros = $this->load_model('parceiros/parceiros');
-        $this->modeloTokens = $this->load_model('empresas/tokens');
     }
-
-  
 }

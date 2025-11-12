@@ -7,7 +7,7 @@ class DashboardModel extends MainModel
 
 	private $erro;
 
-	public function __construct($db = false, $controller = null)
+	public function __construct($db = null, $controller = null)
 	{
 		$this->db = $db;
 		$this->controller = $controller;
@@ -24,19 +24,108 @@ class DashboardModel extends MainModel
 			// Total de eventos
 			$queryEventos = $this->db->query("SELECT COUNT(*) as total FROM tblEvento WHERE status = 'T'");
 			$totalEventos = $queryEventos->fetch()['total'];
-			
+
 			// Total de credenciais
 			$queryCredenciais = $this->db->query("SELECT COUNT(*) as total FROM tblCredencial WHERE status = 'T'");
 			$totalCredenciais = $queryCredenciais->fetch()['total'];
-			
+
 			// Total de pessoas
 			$queryPessoas = $this->db->query("SELECT COUNT(*) as total FROM tblPessoa WHERE status = 'T'");
 			$totalPessoas = $queryPessoas->fetch()['total'];
-			
+
 			// Total de usuários
 			$queryUsuarios = $this->db->query("SELECT COUNT(*) as total FROM tblUsuario WHERE status = 'T'");
 			$totalUsuarios = $queryUsuarios->fetch()['total'];
-			
+
+			// Total de setores
+			$querySetores = $this->db->query("SELECT COUNT(*) as total FROM tblSetor WHERE status = 'T'");
+			$totalSetores = $querySetores->fetch()['total'];
+
+			// Total de leitores
+			$queryLeitores = $this->db->query("SELECT COUNT(*) as total FROM tblLeitor WHERE status = 'T'");
+			$totalLeitores = $queryLeitores->fetch()['total'];
+
+			// Estatísticas de entradas
+			$queryEntradas = $this->db->query("
+				SELECT 
+					COUNT(*) as total,
+					SUM(CASE WHEN permitida = 'T' THEN 1 ELSE 0 END) as permitidas,
+					SUM(CASE WHEN permitida = 'F' THEN 1 ELSE 0 END) as negadas,
+					SUM(CASE WHEN tipoEntrada = 'ENTRADA' THEN 1 ELSE 0 END) as entradas,
+					SUM(CASE WHEN tipoEntrada = 'SAIDA' THEN 1 ELSE 0 END) as saidas
+				FROM tblEntradas
+			");
+			$estatisticasEntradas = $queryEntradas->fetch(PDO::FETCH_ASSOC);
+
+			// Entradas nas últimas 24 horas
+			$queryEntradasHoje = $this->db->query("
+				SELECT COUNT(*) as total 
+				FROM tblEntradas 
+				WHERE dataTentativa >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+			");
+			$entradasHoje = $queryEntradasHoje->fetch()['total'];
+
+			// Entradas por dia (últimos 7 dias)
+			$queryEntradasPorDia = $this->db->query("
+				SELECT 
+					DATE(dataTentativa) as data,
+					COUNT(*) as total,
+					SUM(CASE WHEN permitida = 'T' THEN 1 ELSE 0 END) as permitidas,
+					SUM(CASE WHEN permitida = 'F' THEN 1 ELSE 0 END) as negadas
+				FROM tblEntradas
+				WHERE dataTentativa >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+				GROUP BY DATE(dataTentativa)
+				ORDER BY data ASC
+			");
+			$entradasPorDia = $queryEntradasPorDia->fetchAll(PDO::FETCH_ASSOC);
+
+			// Entradas por hora (hoje)
+			$queryEntradasPorHora = $this->db->query("
+				SELECT 
+					HOUR(dataTentativa) as hora,
+					COUNT(*) as total
+				FROM tblEntradas
+				WHERE DATE(dataTentativa) = CURDATE()
+				GROUP BY HOUR(dataTentativa)
+				ORDER BY hora ASC
+			");
+			$entradasPorHora = $queryEntradasPorHora->fetchAll(PDO::FETCH_ASSOC);
+
+			// Top 5 setores com mais entradas
+			$queryTopSetores = $this->db->query("
+				SELECT 
+					s.nomeSetor,
+					COUNT(*) as total
+				FROM tblEntradas e
+				INNER JOIN tblSetor s ON e.idSetor = s.id
+				WHERE s.status = 'T'
+				GROUP BY e.idSetor
+				ORDER BY total DESC
+				LIMIT 5
+			");
+			$topSetores = $queryTopSetores->fetchAll(PDO::FETCH_ASSOC);
+
+			// Últimas 10 entradas
+			$queryUltimasEntradas = $this->db->query("
+				SELECT 
+					e.id,
+					e.dataTentativa,
+					e.tipoEntrada,
+					e.permitida,
+					e.mensagem,
+					p.nome AS nomePessoa,
+					p.sobrenome AS sobrenomePessoa,
+					s.nomeSetor AS nomeSetor,
+					ev.nomeEvento
+				FROM tblEntradas e
+				LEFT JOIN tblPessoa p ON e.idPessoa = p.id
+				LEFT JOIN tblSetor s ON e.idSetor = s.id
+				LEFT JOIN tblEvento ev ON e.idEvento = ev.id
+				ORDER BY e.dataTentativa DESC
+				LIMIT 10
+			");
+			$ultimasEntradas = $queryUltimasEntradas->fetchAll(PDO::FETCH_ASSOC);
+
 			// Eventos ativos (em andamento ou próximos)
 			$queryEventosAtivos = $this->db->query("
 				SELECT * FROM tblEvento 
@@ -46,15 +135,22 @@ class DashboardModel extends MainModel
 				LIMIT 6
 			");
 			$eventosAtivos = $queryEventosAtivos->fetchAll(PDO::FETCH_ASSOC);
-			
+
 			return [
 				'totalEventos' => $totalEventos,
 				'totalCredenciais' => $totalCredenciais,
 				'totalPessoas' => $totalPessoas,
 				'totalUsuarios' => $totalUsuarios,
+				'totalSetores' => $totalSetores,
+				'totalLeitores' => $totalLeitores,
+				'estatisticasEntradas' => $estatisticasEntradas,
+				'entradasHoje' => $entradasHoje,
+				'entradasPorDia' => $entradasPorDia,
+				'entradasPorHora' => $entradasPorHora,
+				'topSetores' => $topSetores,
+				'ultimasEntradas' => $ultimasEntradas,
 				'eventosAtivos' => $eventosAtivos
 			];
-			
 		} catch (Exception $e) {
 			Log::error('Erro ao buscar dados do dashboard: ' . $e->getMessage());
 			return [
@@ -62,242 +158,22 @@ class DashboardModel extends MainModel
 				'totalCredenciais' => 0,
 				'totalPessoas' => 0,
 				'totalUsuarios' => 0,
+				'totalSetores' => 0,
+				'totalLeitores' => 0,
+				'estatisticasEntradas' => [
+					'total' => 0,
+					'permitidas' => 0,
+					'negadas' => 0,
+					'entradas' => 0,
+					'saidas' => 0
+				],
+				'entradasHoje' => 0,
+				'entradasPorDia' => [],
+				'entradasPorHora' => [],
+				'topSetores' => [],
+				'ultimasEntradas' => [],
 				'eventosAtivos' => []
 			];
 		}
-	}
-	
-	/**
-	 * Método antigo - mantido por compatibilidade mas retorna vazio
-	 */
-	public function getDadosDashboardParceiro($idEmpresa = 0, $ano = 0)
-	{
-		return [
-			'paginasUsuario' => ['labels' => [], 'data' => []],
-			'paginasMes' => ['labels' => [], 'data' => []],
-			'paginasImpressora' => ['labels' => [], 'data' => []],
-			'grayscale' => [0, 0],
-			'duplex' => [0, 0],
-			'documentos' => [],
-			'anos' => [],
-			'anoSelecionado' => date('Y')
-		];
-	}
-	
-	/**
-	 * Método antigo - mantido vazio
-	 */
-	private function getOldDashboardData($idEmpresa = 0, $ano = 0)
-	{
-
-		$where = " WHERE tblImpressoes.idEmpresa = $idEmpresa ";
-
-		// Primeiro busca os anos disponíveis
-		$queryAnos = $this->db->query("
-			SELECT DISTINCT YEAR(dataCadastro) as ano
-			FROM tblImpressoes
-			$where
-			ORDER BY ano DESC
-		");
-		$anos = $queryAnos->fetchAll(PDO::FETCH_COLUMN);
-
-		// Pega o primeiro ano da lista (mais recente)
-		$anoSelecionado = $anos[0];
-
-		if ($ano > 0) {
-			$anoSelecionado = $ano;
-		}
-
-		$where .= " AND YEAR(dataCadastro) = " . $anoSelecionado;
-
-		// Páginas por Usuário
-		$queryPaginasUsuario = $this->db->query("
-			SELECT 
-				nomeUsuario as usuario,
-				SUM(paginas) as total
-			FROM tblImpressoes
-			$where
-			GROUP BY nomeUsuario
-			ORDER BY total DESC
-			LIMIT 15
-		");
-		$paginasUsuario = $queryPaginasUsuario->fetchAll(PDO::FETCH_ASSOC);
-
-		// Páginas por Mês (últimos 12 meses)
-		$queryPaginasMes = $this->db->query("
-			SELECT 
-				DATE_FORMAT(dataCadastro, '%b') as mes,
-				SUM(paginas) as total
-			FROM tblImpressoes
-			$where
-			AND dataCadastro >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
-			GROUP BY MONTH(dataCadastro), YEAR(dataCadastro)
-			ORDER BY YEAR(dataCadastro) DESC, MONTH(dataCadastro) DESC
-			LIMIT 12
-		");
-		$paginasMes = $queryPaginasMes->fetchAll(PDO::FETCH_ASSOC);
-
-		// Páginas por Impressora
-		$queryPaginasImpressora = $this->db->query("
-			SELECT 
-				nomeImpressora as impressora,
-				SUM(paginas) as total,
-				COUNT(*) as documentos
-			FROM tblImpressoes
-			$where
-			GROUP BY nomeImpressora
-			ORDER BY total DESC
-		");
-		$paginasImpressora = $queryPaginasImpressora->fetchAll(PDO::FETCH_ASSOC);
-
-		// Grayscale vs Colorido
-		$queryGrayscale = $this->db->query("
-			SELECT 
-				monocromatico,
-				COUNT(*) as total,
-				SUM(paginas) as paginas
-			FROM tblImpressoes
-			$where
-			GROUP BY monocromatico
-		");
-		$grayscale = $queryGrayscale->fetchAll(PDO::FETCH_ASSOC);
-
-		// Duplex vs Simplex
-		$queryDuplex = $this->db->query("
-			SELECT 
-				duplex,
-				COUNT(*) as total,
-				SUM(paginas) as paginas
-			FROM tblImpressoes
-			$where
-			GROUP BY duplex
-		");
-		$duplex = $queryDuplex->fetchAll(PDO::FETCH_ASSOC);
-
-		// Documentos Recentes
-		$queryDocumentos = $this->db->query("
-			SELECT 
-				DATE_FORMAT(dataCadastro, '%d/%m/%Y %H:%i:%s') as data,
-				nomeUsuario as usuario,
-				nomeArquivo as documento,
-				nomeImpressora as impressora,
-				paginas,
-				duplex,
-				monocromatico,
-				custoTotal
-			FROM tblImpressoes
-			$where
-			ORDER BY dataCadastro DESC
-			LIMIT 50
-		");
-		$documentos = $queryDocumentos->fetchAll(PDO::FETCH_ASSOC);
-
-		// Calcula percentuais para gráficos com validação
-		$totalPaginasImpressora = array_sum(array_column($paginasImpressora, 'total'));
-		foreach ($paginasImpressora as &$impressora) {
-			$impressora['percentual'] = $totalPaginasImpressora > 0 ?
-				round(($impressora['total'] / $totalPaginasImpressora) * 100, 2) : 0;
-		}
-
-		// Processa dados de grayscale com validação
-		$grayscaleData = [
-			'GRAYSCALE' => array_sum(array_column(array_filter($grayscale, function ($item) {
-				return $item['monocromatico'] == 'GRAYSCALE';
-			}), 'paginas')),
-			'NOT GRAYSCALE' => array_sum(array_column(array_filter($grayscale, function ($item) {
-				return $item['monocromatico'] == 'NOT GRAYSCALE';
-			}), 'paginas'))
-		];
-
-		$totalGrayscale = $grayscaleData['GRAYSCALE'] + $grayscaleData['NOT GRAYSCALE'];
-
-		if ($totalGrayscale > 0) {
-			$grayscalePercentual = [
-				round(($grayscaleData['GRAYSCALE'] / $totalGrayscale) * 100, 2),
-				round(($grayscaleData['NOT GRAYSCALE'] / $totalGrayscale) * 100, 2)
-			];
-		} else {
-			$grayscalePercentual = [0, 0];
-		}
-
-		// Processa dados de duplex com validação
-		$duplexData = [
-			'DUPLEX' => array_sum(array_column(array_filter($duplex, function ($item) {
-				return $item['duplex'] == 'DUPLEX';
-			}), 'paginas')),
-			'NOT DUPLEX' => array_sum(array_column(array_filter($duplex, function ($item) {
-				return $item['duplex'] == 'NOT DUPLEX';
-			}), 'paginas'))
-		];
-
-		$totalDuplex = $duplexData['DUPLEX'] + $duplexData['NOT DUPLEX'];
-
-		if ($totalDuplex > 0) {
-			$duplexPercentual = [
-				round(($duplexData['DUPLEX'] / $totalDuplex) * 100, 2),
-				round(($duplexData['NOT DUPLEX'] / $totalDuplex) * 100, 2)
-			];
-		} else {
-			$duplexPercentual = [0, 0];
-		}
-
-		// Se não tiver dados para o ano, retorna arrays vazios
-		if (empty($paginasUsuario)) {
-			return [
-				'paginasUsuario' => [
-					'labels' => [],
-					'data' => []
-				],
-				'paginasMes' => [
-					'labels' => [],
-					'data' => []
-				],
-				'paginasImpressora' => [
-					'labels' => [],
-					'data' => []
-				],
-				'grayscale' => [0, 0],
-				'duplex' => [0, 0],
-				'documentos' => [],
-				'anos' => $anos,
-				'anoSelecionado' => $anoSelecionado
-			];
-		}
-
-		return [
-			'paginasUsuario' => [
-				'labels' => array_column($paginasUsuario, 'usuario'),
-				'data' => array_column($paginasUsuario, 'total')
-			],
-			'paginasMes' => [
-				'labels' => array_reverse(array_column($paginasMes, 'mes')),
-				'data' => array_reverse(array_column($paginasMes, 'total'))
-			],
-			'paginasImpressora' => [
-				'labels' => array_column($paginasImpressora, 'impressora'),
-				'data' => array_column($paginasImpressora, 'percentual')
-			],
-			'grayscale' => $grayscalePercentual,
-			'duplex' => $duplexPercentual,
-			'documentos' => $documentos,
-			'anos' => $anos,
-			'anoSelecionado' => $anoSelecionado
-		];
-	}
-
-	public function getAnosDisponiveis($idParceiro = 0)
-	{
-		$where = " WHERE 1=1 ";
-		if ($idParceiro > 0) {
-			$where .= " AND idParceiro = " . $idParceiro . " ";
-		}
-
-		$queryAnos = $this->db->query("
-			SELECT DISTINCT YEAR(dataCadastro) as ano
-			FROM tblImpressoes
-			$where
-			ORDER BY ano DESC
-		");
-		return $queryAnos->fetchAll(PDO::FETCH_COLUMN);
 	}
 }

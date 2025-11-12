@@ -263,7 +263,7 @@ class CredenciaisModel extends MainModel
             }
         }
     }
-    
+
     /**
      * Cria uma nova credencial
      */
@@ -273,14 +273,14 @@ class CredenciaisModel extends MainModel
             // Busca informações do lote
             $queryLote = $this->db->query("SELECT * FROM tblLote WHERE id = ?", array($dados['idLote']));
             $lote = $queryLote->fetch(PDO::FETCH_ASSOC);
-            
+
             if (!$lote) {
                 return false;
             }
-            
+
             // Gera código da credencial
             $codigo = $this->gerarCodigoCredencial($lote);
-            
+
             // Dados da credencial
             $dadosCredencial = [
                 'idLote' => $dados['idLote'],
@@ -295,17 +295,16 @@ class CredenciaisModel extends MainModel
                 'dataCadastro' => date('Y-m-d H:i:s'),
                 'idUsuarioCadastro' => $_SESSION['userdata']['id']
             ];
-            
+
             $query = $this->db->insert('tblCredencial', $dadosCredencial);
-            
+
             return $query;
-            
         } catch (Exception $e) {
             Log::error('Erro ao criar credencial: ' . $e->getMessage());
             return false;
         }
     }
-    
+
     /**
      * Atualiza uma credencial existente
      */
@@ -315,40 +314,35 @@ class CredenciaisModel extends MainModel
             // Primeiro desativa a credencial antiga
             $sql = "UPDATE tblCredencial SET status = 'F' WHERE idPessoa = ? AND idEvento = ? AND status = 'T'";
             $this->db->query($sql, array($idPessoa, $idEvento));
-            
+
             // Cria nova credencial
             return $this->criarCredencial($dados);
-            
         } catch (Exception $e) {
             Log::error('Erro ao atualizar credencial: ' . $e->getMessage());
             return false;
         }
     }
-    
+
     /**
      * Gera código da credencial baseado nas configurações do lote
      */
     private function gerarCodigoCredencial($lote)
     {
-        // Se tem autonumeração
-        if ($lote['autonumeracao']) {
-            // Busca último número usado
-            $sql = "SELECT MAX(CAST(codigoCredencial AS UNSIGNED)) as ultimo FROM tblCredencial WHERE idLote = ?";
-            $query = $this->db->query($sql, array($lote['id']));
-            $resultado = $query->fetch(PDO::FETCH_ASSOC);
-            
-            $proximo = ($resultado['ultimo'] ? $resultado['ultimo'] : 0) + 1;
-            
-            // Formata com zeros à esquerda se necessário
-            if ($lote['qtdDigitos']) {
-                return str_pad($proximo, $lote['qtdDigitos'], '0', STR_PAD_LEFT);
-            }
-            
-            return $proximo;
-        }
-        
+        // Busca último número usado
+        // $sql = "SELECT MAX(CAST(codigoCredencial AS UNSIGNED)) as ultimo FROM tblCredencial WHERE idLote = ?";
+        // $query = $this->db->query($sql, array($lote['id']));
+        // $resultado = $query->fetch(PDO::FETCH_ASSOC);
+
+        // $proximo = ($resultado['ultimo'] ? $resultado['ultimo'] : 0) + 1;
+
+        // // Formata com zeros à esquerda se necessário
+        // if ($lote['qtdDigitos']) {
+        //     return str_pad($proximo, $lote['qtdDigitos'], '0', STR_PAD_LEFT);
+        // }
+
+        // return $proximo;
+
         // Gera código aleatório
         return strtoupper(uniqid());
     }
-
 }

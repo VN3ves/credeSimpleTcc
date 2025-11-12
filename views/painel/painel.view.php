@@ -5,6 +5,9 @@ $activePage = isset($_GET['path']) ? explode('/', $_GET['path']) : null;
 
 $painelUsuarios = $this->load_model('usuarios/usuarios');
 
+$usuario = $painelUsuarios->getUsuario($_SESSION['userdata']['id']);
+$permissao = $usuario['permissao'];
+
 ?>
 
 <!DOCTYPE html>

@@ -18,28 +18,8 @@ class RecursosController extends MainController
 
         $modeloLeitores = $this->load_model('recursos/leitores');
         $modeloSetores = $this->load_model('recursos/setores');
-        $modeloTerminais = $this->load_model('recursos/terminais');
 
         $conteudo = ABSPATH . '/views/recursos/leitores.view.php';
-        require ABSPATH . '/views/painel/painel.view.php';
-    }
-
-    public function terminais()
-    {
-        if (!$this->logged_in) {
-            $this->logout();
-
-            $this->goto_login();
-
-            return;
-        }
-
-        $this->title = SYS_NAME . ' - Terminais';
-
-        $modeloSetores = $this->load_model('recursos/setores');
-        $modeloTerminais = $this->load_model('recursos/terminais');
-
-        $conteudo = ABSPATH . '/views/recursos/terminais.view.php';
         require ABSPATH . '/views/painel/painel.view.php';
     }
 

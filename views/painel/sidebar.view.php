@@ -10,11 +10,13 @@
             </a>
         </li>
 
-        <li class="nav-item"><a href="<?php echo HOME_URI; ?>/eventos" class="nav-link <?php if (isset($activePage[0]) && $activePage[0] == 'eventos' && !isset($activePage[2])) {
-                                                                                            echo 'active';
-                                                                                        } ?>"><i class="far fa-calendar nav-icon"></i>
-                <p>Eventos</p>
-            </a></li>
+        <?php if (check_permissions('SUPERADMIN', $permissao)) { ?>
+            <li class="nav-item"><a href="<?php echo HOME_URI; ?>/eventos" class="nav-link <?php if (isset($activePage[0]) && $activePage[0] == 'eventos' && !isset($activePage[2])) {
+                                                                                                echo 'active';
+                                                                                            } ?>"><i class="far fa-calendar nav-icon"></i>
+                    <p>Eventos</p>
+                </a></li>
+        <?php } ?>
 
         <?php
         $modeloEvento = $this->load_model('eventos/eventos');
@@ -44,102 +46,81 @@
                     <p>Credenciamento</p>
                 </a>
             </li>
+            <?php if (check_permissions('ADMIN', $permissao)) { ?>
 
-            <!-- Paginas de Recursos -->
-            <li class="nav-item <?php if (isset($activePage[0]) && $activePage[0] == 'recursos') {
-                                    echo 'menu-open';
-                                } ?>">
-                <a href="#" class="nav-link <?php if (isset($activePage[0]) && $activePage[0] == 'recursos') {
-                                                echo 'active';
-                                            } ?>"><i class="nav-icon fa-solid fa-eye"></i>
+                <li class="nav-item">
+                    <a href="<?php echo HOME_URI; ?>/entradas" class="nav-link <?php
+                                                                                if (isset($activePage[0]) && $activePage[0] == 'entradas') {
+                                                                                    echo 'active';
+                                                                                }
+                                                                                ?>">
+                        <i class="fas fa-door-open nav-icon"></i>
+                        <p>Registros de Entrada</p>
+                    </a>
+                </li>
 
-                    <p>Recursos<i class="right fas fa-angle-left"></i></p>
-                </a>
-                <ul class="nav nav-treeview ml-3">
+                <!-- Paginas de Recursos -->
+                <li class="nav-item <?php if (isset($activePage[0]) && $activePage[0] == 'recursos') {
+                                        echo 'menu-open';
+                                    } ?>">
+                    <a href="#" class="nav-link <?php if (isset($activePage[0]) && $activePage[0] == 'recursos') {
+                                                    echo 'active';
+                                                } ?>"><i class="nav-icon fa-solid fa-eye"></i>
 
-                    <li class="nav-item pl-2"><a href="<?php echo HOME_URI; ?>/recursos/setores" class="nav-link <?php if (isset($activePage[0]) && $activePage[0] == 'recursos' && $activePage[1] == 'setores') {
-                                                                                                                        echo 'active';
-                                                                                                                    } ?>"><i class="fas fa-map-marker nav-icon"></i>
-                            <p>Setores</p>
-                        </a></li>
+                        <p>Recursos<i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview ml-3">
 
-                    <li class="nav-item pl-2"><a href="<?php echo HOME_URI; ?>/recursos/terminais" class="nav-link <?php if (isset($activePage[0]) && $activePage[0] == 'recursos' && $activePage[1] == 'terminais') {
-                                                                                                                        echo 'active';
-                                                                                                                    } ?>"><i class="fab fa-raspberry-pi nav-icon"></i>
-                            <p>Terminais</p>
-                        </a></li>
-
-                    <li class="nav-item pl-2"><a href="<?php echo HOME_URI; ?>/recursos/leitores" class="nav-link <?php if (isset($activePage[0]) && $activePage[0] == 'recursos' && $activePage[1] == 'leitores') {
-                                                                                                                        echo 'active';
-                                                                                                                    } ?>"><i class="fas fa-qrcode nav-icon"></i>
-                            <p>Leitores Faciais</p>
-                        </a></li>
-
-                </ul>
-            </li>
-
-            <li class="nav-item">
-                <a href="<?php echo HOME_URI; ?>/lotes" class="nav-link <?php
-                                                                        if (isset($activePage[0]) && $activePage[0] == 'lotes' && (!isset($activePage[1]) || $activePage[1] == 'index')) {
-                                                                            echo 'active';
-                                                                        }
-                                                                        ?>">
-                    <i class="nav-icon fas fa-credit-card"></i>
-                    <p>Lotes de Credenciais</p>
-                </a>
-            </li>
+                        <li class="nav-item pl-2"><a href="<?php echo HOME_URI; ?>/recursos/setores" class="nav-link <?php if (isset($activePage[0]) && $activePage[0] == 'recursos' && $activePage[1] == 'setores') {
+                                                                                                                            echo 'active';
+                                                                                                                        } ?>"><i class="fas fa-map-marker nav-icon"></i>
+                                <p>Setores</p>
+                            </a></li>
 
 
+                        <li class="nav-item pl-2"><a href="<?php echo HOME_URI; ?>/recursos/leitores" class="nav-link <?php if (isset($activePage[0]) && $activePage[0] == 'recursos' && $activePage[1] == 'leitores') {
+                                                                                                                            echo 'active';
+                                                                                                                        } ?>"><i class="fas fa-qrcode nav-icon"></i>
+                                <p>Leitores Faciais</p>
+                            </a></li>
+
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="<?php echo HOME_URI; ?>/lotes" class="nav-link <?php
+                                                                            if (isset($activePage[0]) && $activePage[0] == 'lotes' && (!isset($activePage[1]) || $activePage[1] == 'index')) {
+                                                                                echo 'active';
+                                                                            }
+                                                                            ?>">
+                        <i class="nav-icon fas fa-credit-card"></i>
+                        <p>Lotes de Credenciais</p>
+                    </a>
+                </li>
+
+
+            <?php } ?>
         <?php } ?>
 
 
 
-            <li class="nav-item <?php if (isset($activePage[0]) && $activePage[0] == 'pessoas' && (!isset($activePage[2]) || $activePage[2] !== 'perfil')) {
-                                    echo 'menu-open';
-                                } ?>">
-                <a href="#" class="nav-link <?php if (isset($activePage[0]) && $activePage[0] == 'pessoas' && (!isset($activePage[2]) || $activePage[2] !== 'perfil')) {
-                                                echo 'active';
-                                            } ?>"><i class="nav-icon fas fa-walking"></i>
-                    <p>Pessoas <i class="right fas fa-angle-left"></i></p>
-                </a>
-                <ul class="nav nav-treeview ml-3">
-                    <li class="nav-item pl-2"><a href="<?php echo HOME_URI; ?>/pessoas" class="nav-link <?php if (isset($activePage[0]) && $activePage[0] == 'pessoas' && !isset($activePage[2])) {
-                                                                                                            echo 'active';
-                                                                                                        } ?>"><i class="far fa-calendar nav-icon"></i>
-                            <p>Pessoas</p>
-                        </a></li>
-
-                </ul>
-            </li>
- 
-
-
-        <!-- <?php
-                if (check_permissions('SUPERADMIN', $this->userdata['idPermissao'])) { ?>
-            <li class="nav-item
-							<?php if (isset($activePage[0]) && $activePage[0] == 'configuracoes') {
+        <li class="nav-item <?php if (isset($activePage[0]) && $activePage[0] == 'pessoas' && (!isset($activePage[2]) || $activePage[2] !== 'perfil')) {
                                 echo 'menu-open';
-                            } ?>
-							
-							">
-                <a href="#" class="nav-link 
-								<?php if (isset($activePage[0]) && $activePage[0] == 'configuracoes') {
-                                    echo 'active';
-                                } ?>
-								"><i class="nav-icon fas fa-cogs"></i>
-                    <p>Configurações <i class="right fas fa-angle-left"></i></p>
-                </a>
-                <ul class="nav nav-treeview ml-3">
-                    <li class="nav-item pl-2"><a href="<?php echo HOME_URI; ?>/configuracoes/permissoes" class="nav-link
-									<?php if (isset($activePage[0]) && $activePage[0] == 'configuracoes' && $activePage[1] == 'permissoes' && !isset($activePage[3])) {
-                                        echo 'active';
-                                    } ?>
-									"><i class="fas fa-key nav-icon"></i>
-                            <p>Permissões</p>
-                        </a></li>
-                </ul>
-            </li>
-        <?php } ?> -->
+                            } ?>">
+            <a href="#" class="nav-link <?php if (isset($activePage[0]) && $activePage[0] == 'pessoas' && (!isset($activePage[2]) || $activePage[2] !== 'perfil')) {
+                                            echo 'active';
+                                        } ?>"><i class="nav-icon fas fa-walking"></i>
+                <p>Pessoas <i class="right fas fa-angle-left"></i></p>
+            </a>
+            <ul class="nav nav-treeview ml-3">
+                <li class="nav-item pl-2"><a href="<?php echo HOME_URI; ?>/pessoas" class="nav-link <?php if (isset($activePage[0]) && $activePage[0] == 'pessoas' && !isset($activePage[2])) {
+                                                                                                        echo 'active';
+                                                                                                    } ?>"><i class="far fa-calendar nav-icon"></i>
+                        <p>Pessoas</p>
+                    </a></li>
+
+            </ul>
+        </li>
 
         <li class="nav-item"><a href="<?php echo HOME_URI; ?>/pessoas/index/perfil" class="nav-link <?php if (isset($activePage[0]) && $activePage[0] == 'pessoas' && (isset($activePage[2]) && $activePage[2] == 'perfil') && (!isset($activePage[3]))) {
                                                                                                         echo 'active';

@@ -1,7 +1,6 @@
 <?php
-// Este bloco pode ser usado para incluir dependências do seu sistema,
-// como o autoload ou funções de segurança, se necessário.
-// if (!defined('ABSPATH')) exit; // Exemplo de verificação de segurança
+if (!defined('ABSPATH')) exit;
+
 ?>
 
 <div class="content-wrapper">
@@ -186,7 +185,7 @@
                             <div class="col-md-4">
                                 <div class="text-center">
                                     <div class="profile-photo-container mb-3">
-                                        <img id="profilePhoto" src="https://via.placeholder.com/200/28a745/ffffff?text=FOTO" 
+                                        <img id="profilePhoto" src="<?php echo HOME_URI; ?>/midia/noPictureProfile.png" 
                                              class="profile-photo img-fluid rounded-circle shadow-sm" 
                                              style="width: 200px; height: 200px; object-fit: cover; border: 4px solid #fff; cursor: pointer;" 
                                              alt="Foto do Participante"
@@ -204,7 +203,7 @@
                                     <div class="mt-3">
                                         <div class="callout callout-info">
                                             <h6><i class="fas fa-lightbulb"></i> Dica</h6>
-                                            <p class="mb-0">A detecção facial ajudará a centralizar o rosto automaticamente.</p>
+                                            <p class="mb-0">Centralize o rosto do participante na câmera antes de capturar.</p>
                                         </div>
                                     </div>
                                 </div>
@@ -303,21 +302,14 @@
             </div>
             <div class="modal-body">
                 <div class="text-center">
-                    <div class="video-container mb-3 position-relative" style="border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <div class="video-container mb-3" style="border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                         <video id="video" autoplay style="width: 100%; max-width: 480px; border-radius: 10px;"></video>
-                        <canvas id="overlay" style="position: absolute; top: 0; left: 0; pointer-events: none;"></canvas>
                     </div>
                     <canvas id="canvas" style="display: none;"></canvas>
                     
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle mr-2"></i>
-                        <span id="face_status">Posicione o participante no centro da câmera. A detecção facial ajudará no enquadramento.</span>
-                    </div>
-                    
-                    <div id="face_detection_status" class="mb-2">
-                        <span class="badge badge-secondary">
-                            <i class="fas fa-eye"></i> Iniciando detecção facial...
-                        </span>
+                        Posicione o participante no centro da câmera e clique em capturar.
                     </div>
                 </div>
             </div>
@@ -469,17 +461,6 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Estilos para detecção facial */
-.face-detected {
-    border: 3px solid #28a745 !important;
-    box-shadow: 0 0 20px rgba(40, 167, 69, 0.5) !important;
-}
-
-.face-not-detected {
-    border: 3px solid #dc3545 !important;
-    box-shadow: 0 0 20px rgba(220, 53, 69, 0.5) !important;
-}
-
 /* Responsividade melhorada */
 @media (max-width: 768px) {
     .profile-photo {
@@ -497,14 +478,8 @@
 }
 </style>
 
-<!-- Face-api.js CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/face-api.js/0.22.2/face-api.min.js"></script>
-
 <script>
 $(document).ready(function() {
-    
-    let faceApiLoaded = false;
-    let detectionInterval = null;
     
     // Inicializar o plugin Select2 no campo de lote
     $('#lote_id').select2({
@@ -513,28 +488,14 @@ $(document).ready(function() {
         width: '100%'
     });
 
-    // Carregar modelos do face-api.js
-    async function loadFaceApiModels() {
-        try {
-            await faceapi.nets.tinyFaceDetector.loadFromUri('https://cdnjs.cloudflare.com/ajax/libs/face-api.js/0.22.2/');
-            faceApiLoaded = true;
-            console.log('Face-api.js carregado com sucesso');
-        } catch (error) {
-            console.warn('Erro ao carregar face-api.js:', error);
-            faceApiLoaded = false;
-        }
-    }
-    
-    // Carregar modelos na inicialização
-    loadFaceApiModels();
-
     // Função para resetar a tela para o estado inicial
+    var fotoPlaceholder = '<?php echo HOME_URI; ?>/midia/noPictureProfile.png';
     function resetView() {
         $('#credenciamentoForm, #personCard').fadeOut(400, function() {
             $('#credenciamentoForm')[0].reset();
             $('#personForm')[0].reset();
             $('#lote_id').empty().trigger('change');
-            $('#profilePhoto').attr('src', 'https://via.placeholder.com/200/28a745/ffffff?text=FOTO');
+            $('#profilePhoto').attr('src', fotoPlaceholder);
             $('#participante_id').val('');
             $('#foto_base64').val('');
             $('#credencial_atual_section').hide();
@@ -631,8 +592,9 @@ $(document).ready(function() {
                     $('#nome').val(`${pessoa.nome} ${pessoa.sobrenome}`);
                     
                     // Define a foto
+                    var fotoPlaceholder = pessoa.localFoto ? pessoa.localFoto : '<?php echo HOME_URI; ?>/midia/noPictureProfile.png';
                     const iniciais = `${pessoa.nome.charAt(0)}${pessoa.sobrenome.charAt(0)}`;
-                    $('#profilePhoto').attr('src', `https://via.placeholder.com/200/007bff/ffffff?text=${iniciais}`);
+                    $('#profilePhoto').attr('src', fotoPlaceholder);
                     
                     // Verifica se já tem credencial
                     if (credencial && credencial.nomeCredencial) {
@@ -720,7 +682,8 @@ $(document).ready(function() {
                     $('#nome').val(`${pessoa.nome} ${pessoa.sobrenome}`);
                     
                     const iniciais = `${pessoa.nome.charAt(0)}${pessoa.sobrenome.charAt(0)}`;
-                    $('#profilePhoto').attr('src', `https://via.placeholder.com/200/007bff/ffffff?text=${iniciais}`);
+                    var fotoPlaceholder = '<?php echo HOME_URI; ?>/midia/noPictureProfile.png';
+                    $('#profilePhoto').attr('src', fotoPlaceholder);
                     
                     // Configura para novo credenciamento
                     $('#action_type').val('new');
@@ -837,81 +800,11 @@ $(document).ready(function() {
         });
     });
 
-    // Lógica da Câmera com Detecção Facial
+    // Lógica da Câmera
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
-    const overlay = document.getElementById('overlay');
     const snap = document.getElementById('snap');
     let stream = null;
-
-    // Função para iniciar detecção facial
-    async function startFaceDetection() {
-        if (!faceApiLoaded || !video.videoWidth) return;
-
-        // Configurar overlay canvas
-        overlay.width = video.videoWidth;
-        overlay.height = video.videoHeight;
-        overlay.style.width = video.offsetWidth + 'px';
-        overlay.style.height = video.offsetHeight + 'px';
-
-        const displaySize = { width: video.videoWidth, height: video.videoHeight };
-        faceapi.matchDimensions(overlay, displaySize);
-
-        detectionInterval = setInterval(async () => {
-            try {
-                const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
-                
-                const resizedDetections = faceapi.resizeResults(detections, displaySize);
-                const context = overlay.getContext('2d');
-                context.clearRect(0, 0, overlay.width, overlay.height);
-                
-                const statusElement = $('#face_detection_status');
-                const faceStatusElement = $('#face_status');
-                
-                if (resizedDetections.length > 0) {
-                    // Rosto detectado
-                    statusElement.html('<span class="badge badge-success"><i class="fas fa-eye"></i> Rosto detectado</span>');
-                    faceStatusElement.text('Rosto detectado! Posição ideal para captura.');
-                    video.classList.remove('face-not-detected');
-                    video.classList.add('face-detected');
-                    
-                    // Desenhar retângulo ao redor do rosto
-                    resizedDetections.forEach(detection => {
-                        const { x, y, width, height } = detection.box;
-                        context.strokeStyle = '#28a745';
-                        context.lineWidth = 3;
-                        context.strokeRect(x, y, width, height);
-                        
-                        // Adicionar texto
-                        context.fillStyle = '#28a745';
-                        context.font = '16px Arial';
-                        context.fillText('Rosto detectado', x, y - 10);
-                    });
-                } else {
-                    // Nenhum rosto detectado
-                    statusElement.html('<span class="badge badge-warning"><i class="fas fa-search"></i> Procurando rosto...</span>');
-                    faceStatusElement.text('Posicione o rosto na área da câmera para melhor enquadramento.');
-                    video.classList.remove('face-detected');
-                    video.classList.add('face-not-detected');
-                }
-            } catch (error) {
-                console.warn('Erro na detecção facial:', error);
-            }
-        }, 500);
-    }
-
-    // Parar detecção facial
-    function stopFaceDetection() {
-        if (detectionInterval) {
-            clearInterval(detectionInterval);
-            detectionInterval = null;
-        }
-        if (overlay) {
-            const context = overlay.getContext('2d');
-            context.clearRect(0, 0, overlay.width, overlay.height);
-        }
-        video.classList.remove('face-detected', 'face-not-detected');
-    }
 
     // Inicia a câmera quando o modal é aberto
     $('#capturePhotoModal').on('shown.bs.modal', async function() {
@@ -924,20 +817,6 @@ $(document).ready(function() {
                 } 
             });
             video.srcObject = stream;
-            
-            // Aguardar o vídeo carregar antes de iniciar detecção
-            video.addEventListener('loadeddata', () => {
-                setTimeout(() => {
-                    if (faceApiLoaded) {
-                        startFaceDetection();
-                        $('#face_detection_status').html('<span class="badge badge-info"><i class="fas fa-search"></i> Iniciando detecção...</span>');
-                    } else {
-                        $('#face_detection_status').html('<span class="badge badge-secondary"><i class="fas fa-info-circle"></i> Detecção facial não disponível</span>');
-                        $('#face_status').text('Posicione o participante no centro da câmera e clique em capturar.');
-                    }
-                }, 1000);
-            });
-
         } catch (err) {
             console.error("Erro ao acessar a câmera: ", err);
             Swal.fire({
@@ -951,13 +830,11 @@ $(document).ready(function() {
 
     // Para a câmera quando o modal é fechado
     $('#capturePhotoModal').on('hidden.bs.modal', function() {
-        stopFaceDetection();
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
             stream = null;
         }
         video.srcObject = null;
-        $('#face_detection_status').html('<span class="badge badge-secondary"><i class="fas fa-eye"></i> Câmera desligada</span>');
     });
 
     // Captura a foto
@@ -981,7 +858,7 @@ $(document).ready(function() {
         });
     });
 
-    // Auto-focus no campo de busca
+    // Auto-focus no campo de busca ao carregar a página
     $('#documento_busca').focus();
 
     // Formatação dos campos
@@ -1038,8 +915,6 @@ $(document).ready(function() {
             $(this).removeClass('is-invalid');
         }
     });
-
-    // Sistema sem limite de lotes - tooltip não necessário
 
 });
 </script>

@@ -116,52 +116,50 @@ $start = ($page - 1) * 20;
 						</thead>
 
 						<tbody>
-							<?php 
+							<?php
 							if (!empty($eventos)):
 								foreach ($eventos as $evento):
-									$permiteEditar = $evento['aprovado'] == 'T' ? true : false;
+
 							?>
-								<tr>
-									<td>
-										<a href="<?php echo HOME_URI; ?>/eventos/index/perfil/<?php echo encryptId($evento['idEvento']); ?>">
-											<?php echo $evento['nomeEvento']; ?>
-										</a>
-									</td>
+									<tr>
+										<td>
+											<a href="<?php echo HOME_URI; ?>/eventos/index/perfil/<?php echo encryptId($evento['idEvento']); ?>">
+												<?php echo $evento['nomeEvento']; ?>
+											</a>
+										</td>
 
-									<td><?php echo $evento['nomeLocal']; ?></td>
+										<td><?php echo $evento['nomeLocal']; ?></td>
 
-									<td>
-										<?php
-										if (!empty($evento['dataInicio'])) {
-											$dataInicial = explode("-", $evento['dataInicio']);
-											$dataFinal = explode("-", $evento['dataFim']);
+										<td>
+											<?php
+											if (!empty($evento['dataInicio'])) {
+												$dataInicial = explode("-", $evento['dataInicio']);
+												$dataFinal = explode("-", $evento['dataFim']);
 
-											if ($evento['dataInicio'] == $evento['dataFim']) {
-												echo $dataInicial[2] . " " . mesAbreviado($dataInicial[1]) . "/" . $dataInicial[0];
-											} else {
-												echo $dataInicial[2] . " " . mesAbreviado($dataInicial[1]) . "/" . $dataInicial[0] . " - " .
-													$dataFinal[2] . " " . mesAbreviado($dataFinal[1]) . "/" . $dataFinal[0];
+												if ($evento['dataInicio'] == $evento['dataFim']) {
+													echo $dataInicial[2] . " " . mesAbreviado($dataInicial[1]) . "/" . $dataInicial[0];
+												} else {
+													echo $dataInicial[2] . " " . mesAbreviado($dataInicial[1]) . "/" . $dataInicial[0] . " - " .
+														$dataFinal[2] . " " . mesAbreviado($dataFinal[1]) . "/" . $dataFinal[0];
+												}
 											}
-										}
-										?>
-									</td>
+											?>
+										</td>
 
-									<td><?php echo $evento['nomeCategoria']; ?></td>
+										<td><?php echo $evento['nomeCategoria']; ?></td>
 
-									<td>
-										<?php
-										if ($evento['aprovado'] == 'F') {
-											echo '<span class="badge badge-danger">Não Aprovado</span>';
-										} elseif ($evento['statusEvento'] == 'T') {
-											echo '<span class="badge badge-success">Ativo</span>';
-										} else {
-											echo '<span class="badge badge-danger">Inativo</span>';
-										}
-										?>
-									</td>
+										<td>
+											<?php
+											if ($evento['statusEvento'] == 'T') {
+												echo '<span class="badge badge-success">Ativo</span>';
+											} else {
+												echo '<span class="badge badge-danger">Inativo</span>';
+											}
+											?>
+										</td>
 
-									<td>
-										<?php if ($permiteEditar) { ?>
+										<td>
+
 											<a href="<?php echo HOME_URI; ?>/eventos/index/editar/<?php echo encryptId($evento['idEvento']); ?>"
 												class="btn btn-sm btn-info" title="Editar">
 												<i class="fas fa-edit"></i>
@@ -178,13 +176,13 @@ $start = ($page - 1) * 20;
 													<i class="fas fa-lock"></i>
 												</a>
 											<?php } ?>
-										<?php } ?>
-									</td>
-								</tr>
-							<?php 
+
+										</td>
+									</tr>
+								<?php
 								endforeach;
 							else:
-							?>
+								?>
 								<tr>
 									<td colspan="7" class="text-center">Nenhum evento encontrado</td>
 								</tr>
@@ -224,7 +222,7 @@ $start = ($page - 1) * 20;
 					</div>
 				<?php endif; ?>
 			</div>
-			
+
 			<div class="card-footer">
 				<a href="<?php echo HOME_URI; ?>/eventos/index/adicionar" class="btn btn-danger btn-lg">Adicionar Evento</a>
 			</div>

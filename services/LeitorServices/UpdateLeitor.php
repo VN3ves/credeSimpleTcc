@@ -10,7 +10,6 @@ class UpdateLeitor extends MainModel
 
         $query = $this->eventoDB->update('tblLeitor', 'id', $id, array(
             'idSetor' => $data['idSetor'],
-            'idTerminal' => $data['idTerminal'],
             'nomeLeitor' => $data['nomeLeitor'],
             'ip' => $data['ip'],
             'usuario' => $data['usuario'],

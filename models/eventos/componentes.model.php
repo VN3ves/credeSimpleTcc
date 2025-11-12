@@ -25,7 +25,6 @@ class ComponentesModel extends MainModel
 
         // Captura os dados do formulário
         $this->form_data['idEvento'] = decryptHash(chk_array($this->parametros, 1));
-        $this->form_data['qtdTerminais'] = isset($_POST['qtdTerminais']) ? $_POST['qtdTerminais'] : 0;
         $this->form_data['qtdSetores'] = isset($_POST['qtdSetores']) ? $_POST['qtdSetores'] : 0;
         $this->form_data['usaLeitorFacial'] = isset($_POST['usaLeitorFacial']) ? 'S' : 'N';
         $this->form_data['qtdLeitoresFaciais'] = isset($_POST['qtdLeitoresFaciais']) ? $_POST['qtdLeitoresFaciais'] : 0;

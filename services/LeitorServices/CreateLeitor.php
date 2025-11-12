@@ -10,7 +10,6 @@ class CreateLeitor extends MainModel
         $query = $this->eventoDB->insert('tblLeitor', array(
             'idEvento' => $data['idEvento'],
             'idSetor' => $data['idSetor'],
-            'idTerminal' => $data['idTerminal'],
             'nomeLeitor' => $data['nomeLeitor'],
             'ip' => $data['ip'],
             'usuario' => $data['usuario'],
