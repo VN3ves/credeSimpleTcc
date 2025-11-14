@@ -215,6 +215,10 @@ class CredenciamentoController extends MainController
         }
         
         if ($resultado) {
+
+            // Chama o processamento de jobs, mas não espera o resultado
+            processarJobs();
+            
             echo json_encode([
                 'success' => true,
                 'message' => $action_type === 'change' ? 'Credencial trocada com sucesso' : 'Credenciamento realizado com sucesso'
