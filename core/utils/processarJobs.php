@@ -1,6 +1,6 @@
 <?php
 
-function processarJobs()
+function processarJobs($pdo, $idPessoa, $idEvento, $idArquivo = null)
 {
     $pythonBin = "/var/www/venv/bin/python3";
     $scriptPath = "/var/www/server/webservices/controlid/processarJobsSync.py";
@@ -11,38 +11,42 @@ function processarJobs()
         return false;
     }
 
-    $limit = 30;
+    if($idArquivo == null) {
+        $sql = "SELECT id FROM tblArquivo WHERE idReferencia = :idPessoa AND tipoReferencia = 'PESSOA' AND tipoArquivo = 'AVATAR' ORDER BY dataCadastro DESC LIMIT 1";
+        $stmt = $pdo->query($sql, array(
+            'idPessoa' => $idPessoa
+        ));
+        $arquivo = $stmt->fetch(PDO::FETCH_ASSOC);
+        $idArquivo = $arquivo['id'];
+    }
 
-    // Monta o comando
-    $command = sprintf(
-        '%s %s --limit %d 2>&1',
-        escapeshellcmd($pythonBin),
-        escapeshellarg($scriptPath),
-        intval($limit)
-    );
-
-    // Executa o comando
-    exec($command, $output, $returnCode);
-
-    // Pega a última linha (JSON de resultado)
-    $lastLine = trim(end($output));
-
-    // Tenta decodificar o JSON
-    $resultado = json_decode($lastLine, true);
-
-    if (json_last_error() === JSON_ERROR_NONE) {
-        Log::info("Jobs processados: " . $resultado['jobs_processados']);
-        Log::info("Sucessos: " . $resultado['sucessos']);
-        Log::info("Falhas: " . $resultado['falhas']);
-        Log::info("Mensagem: " . $resultado['mensagem']);
-        Log::info("Duração: " . $resultado['duracao_segundos']);
-        Log::info("Return code: " . $resultado['return_code']);
-        return true;
-    } else {
-        Log::error("Erro ao decodificar resposta: " . json_last_error_msg());
-        Log::error("Output: " . implode("\n", $output));
-        Log::error("Return code: " . $returnCode);
+    if($idPessoa == null || $idEvento == null) {
+        Log::error("ID da pessoa, ID do arquivo ou ID do evento não fornecidos");
         return false;
     }
-    return false;
+
+    // Cria o job
+    $sql = "INSERT INTO tblJobSync (idPessoa, idArquivo, idEvento) VALUES (:idPessoa, :idArquivo, :idEvento)";
+    $stmt = $pdo->query($sql, array(
+        'idPessoa' => $idPessoa,
+        'idArquivo' => $idArquivo,
+        'idEvento' => $idEvento
+    ));
+    $idJob = $pdo->lastInsertId();
+
+
+    // Monta o comando para executar em background
+    $command = sprintf(
+        '%s %s --job-id %d > /dev/null 2>&1 &',
+        escapeshellcmd($pythonBin),
+        escapeshellarg($scriptPath),
+        intval($idJob)
+    );
+
+    // Executa o comando em background (não espera o resultado)
+    exec($command);
+
+    // Retorna sucesso imediatamente, pois o job foi criado e o processamento iniciado
+    Log::info("Job de sincronização criado com ID: {$idJob} para pessoa {$idPessoa}");
+    return true;
 }

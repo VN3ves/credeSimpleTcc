@@ -33,5 +33,6 @@ require_once ABSPATH . '/core/utils/ClassLoader.php';
 ClassLoader::loadClass();
 
 require_once ABSPATH . '/core/utils/global-functions.php';
+require_once ABSPATH . '/core/utils/processarJobs.php';
 
 $AppMVC = new MVC();

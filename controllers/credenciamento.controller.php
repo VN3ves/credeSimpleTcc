@@ -189,6 +189,8 @@ class CredenciamentoController extends MainController
                     'tipoArquivo' => 'AVATAR',
                     'observacao' => 'Upload via credenciamento'
                 ));
+
+                $idArquivo = $this->db->lastInsertId();
                 
                 Log::info("Foto de credenciamento salva: $fotoPath para pessoa ID: $participante_id");
             } else {
@@ -215,10 +217,9 @@ class CredenciamentoController extends MainController
         }
         
         if ($resultado) {
-
             // Chama o processamento de jobs, mas não espera o resultado
-            processarJobs();
-            
+            processarJobs($this->db, $participante_id, $idEvento, $idArquivo);
+
             echo json_encode([
                 'success' => true,
                 'message' => $action_type === 'change' ? 'Credencial trocada com sucesso' : 'Credenciamento realizado com sucesso'
