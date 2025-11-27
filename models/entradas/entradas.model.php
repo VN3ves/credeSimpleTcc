@@ -70,16 +70,21 @@ class EntradasModel extends MainModel
                         e.permitida,
                         e.mensagem,
                         e.dataCadastro,
+                        e.idArquivo,
+                        a.pathLocal AS pathLocalArquivo,
                         ev.nomeEvento,
                         p.nome AS nomePessoa,
                         p.sobrenome AS sobrenomePessoa,
                         s.nomeSetor AS nomeSetor,
+                        l.nomeLote AS nomeLote,
                         (SELECT documento FROM tblDocumento d WHERE d.idPessoa = e.idPessoa AND d.tipo = 'CPF' LIMIT 1) AS cpf
                     FROM tblEntradas e
                     LEFT JOIN tblEvento ev ON e.idEvento = ev.id
                     LEFT JOIN tblPessoa p ON e.idPessoa = p.id
                     LEFT JOIN tblSetor s ON e.idSetor = s.id
                     LEFT JOIN tblDocumento d ON d.idPessoa = e.idPessoa AND d.tipo = 'CPF'
+                    LEFT JOIN tblArquivo a ON a.id = e.idArquivo
+                    LEFT JOIN tblLote l ON l.id = e.idLote
                     WHERE {$whereClause}
                     ORDER BY e.dataTentativa DESC
                     {$limit}";
