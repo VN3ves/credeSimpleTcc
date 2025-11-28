@@ -31,8 +31,11 @@ class DocumentosModel extends MainModel {
 		}
 		
 		$this->form_data = array();
+
+		$hashId = chk_array($this->parametros, 1);
+		$id = decryptHash($hashId);
 		
-		$this->idPessoa = !empty(chk_array($this->parametros, 1)) ? (int) chk_array($this->parametros, 1) : null;
+		$this->idPessoa = !empty($id) ? (int) $id : null;
 		$this->tipo = isset($_POST["tipo"]) ? $_POST["tipo"] : null;
 		$this->titulo = isset($_POST["titulo"]) ? $_POST["titulo"] : null;
 		$this->documento = isset($_POST["documento"]) ? $_POST["documento"] : null;

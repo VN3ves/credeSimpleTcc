@@ -29,8 +29,11 @@ class EmailsModel extends MainModel {
 		}
 		
 		$this->form_data = array();
+
+		$hashId = chk_array($this->parametros, 1);
+		$id = decryptHash($hashId);
 		
-		$this->idPessoa = !empty(chk_array($this->parametros, 1)) ? (int) chk_array($this->parametros, 1) : null;
+		$this->idPessoa = !empty($id) ? (int) $id : null;
 		$this->email = isset($_POST["email"]) ? $_POST["email"] : null;
 		
 		if(chk_array($this->parametros, 3) == 'editar'){

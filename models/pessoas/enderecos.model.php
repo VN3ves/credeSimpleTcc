@@ -39,8 +39,10 @@ class EnderecosModel extends MainModel {
 		}
 		
 		$this->form_data = array();
+		$hashId = chk_array($this->parametros, 1);
+		$id = decryptHash($hashId);
 		
-		$this->idPessoa = !empty(chk_array($this->parametros, 1)) ? (int) chk_array($this->parametros, 1) : null;
+		$this->idPessoa = !empty($id) ? (int) $id : null;
 		$this->titulo = isset($_POST["titulo"]) ? $_POST["titulo"] : null;
 		$this->cep = isset($_POST["cep"]) ? $_POST["cep"] : null;
 		$this->logradouro = isset($_POST["logradouro"]) ? $_POST["logradouro"] : null;

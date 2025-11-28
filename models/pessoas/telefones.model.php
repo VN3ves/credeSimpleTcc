@@ -30,8 +30,10 @@ class TelefonesModel extends MainModel {
 		}
 		
 		$this->form_data = array();
+		$hashId = chk_array($this->parametros, 1);
+		$id = decryptHash($hashId);
 		
-		$this->idPessoa = !empty(chk_array($this->parametros, 1)) ? chk_array($this->parametros, 1) : null;
+		$this->idPessoa = !empty($id) ? (int) $id : null;
 		$this->telefone = isset($_POST["telefone"]) ? $_POST["telefone"] : null;
 		$this->tipo = isset($_POST["tipo"]) ? $_POST["tipo"] : null;
 		
