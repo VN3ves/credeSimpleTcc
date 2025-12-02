@@ -31,7 +31,7 @@
         ?>
 
             <li class="nav-item">
-                <a href="#" class="nav-link bg-danger text-white font-weight-bold rounded" style="cursor: default;">
+                <a href="<?php echo HOME_URI; ?>/eventos/index/perfil" class="nav-link bg-danger text-white font-weight-bold rounded" style="cursor: default;">
                     <i class="fas fa-calendar-alt nav-icon"></i>
                     <p><?php echo htmlentities(chk_array($evento, 'nomeEvento')); ?></p>
                 </a>
