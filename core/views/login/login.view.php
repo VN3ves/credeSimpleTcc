@@ -52,8 +52,10 @@
 <body class="hold-transition login-page">
     <div class="login-box">
         <div class="card card-outline card-primary">
-            <div class="card-header text-center">
-                <a href="./"><img src="<?php echo HOME_URI; ?>/views/standards/images/logo-login.png" class="img-responsive" alt="<?php echo SYS_NAME; ?>"></a>
+            <div class="card-header text-center py-4">
+                <h1 class="display-5 fw-bold text-primary mb-0">
+                    <?php echo SYS_NAME; ?>
+                </h1> 
             </div>
             <div class="card-body login-card-body">
                 <p class="login-box-msg">Acesse sua conta no <?php echo SYS_NAME; ?></p>

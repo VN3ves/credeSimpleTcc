@@ -131,4 +131,15 @@ class SetoresModel extends MainModel {
         return $getSetoresService->getSetores($filtros);
     }
 
+    public function getQuantidadeSetores($idEvento) {
+        $sql = "SELECT COUNT(id) FROM tblSetor WHERE idEvento = ?";
+        $query = $this->db->query($sql, array($idEvento));
+        if (!$query) {
+            return array();
+        }
+
+        $qtd = $query->fetch(PDO::FETCH_ASSOC);
+        return $qtd;
+    }
+
 }

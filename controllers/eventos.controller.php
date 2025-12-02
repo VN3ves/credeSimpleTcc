@@ -22,6 +22,8 @@ class EventosController extends MainController
         $modeloCategorias = $this->load_model('eventos/categorias');
         $modeloLocais = $this->load_model('eventos/locais');
         $modeloComponentes = $this->load_model('eventos/componentes');
+        $quantidadeSetores = $this->load_model('recursos/setores');
+        $quantidadeLeitores = $this->load_model('recursos/leitores');
 
         //$modeloContratacoes = $this->load_model('eventos/contratacoes');
 

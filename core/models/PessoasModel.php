@@ -294,7 +294,7 @@ class PessoasModel extends MainModel
                 $dadosTelefone = [
                     'idPessoa' => $idPessoa,
                     'tipo' => 'Celular',
-                    'numero' => $dados['telefone'],
+                    'telefone' => $dados['telefone'],
                     'status' => 'T'
                 ];
                 $this->db->insert('tblTelefone', $dadosTelefone);

@@ -157,4 +157,15 @@ class LeitoresModel extends MainModel
         $getLeitoresService = $this->getService('LeitorServices', 'GetLeitores');
         return $getLeitoresService->getLeitores();
     }
+
+     public function getQuantidadeLeitores($idEvento) {
+        $sql = "SELECT COUNT(id) FROM tblLeitor WHERE idEvento = ?";
+        $query = $this->db->query($sql, array($idEvento));
+        if (!$query) {
+            return array();
+        }
+
+        $qtd = $query->fetch(PDO::FETCH_ASSOC);
+        return $qtd;
+    }
 }

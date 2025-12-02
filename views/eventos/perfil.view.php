@@ -21,8 +21,8 @@ $idEvento = decryptHash($_SESSION['idEventoHash']);
 $evento = $modelo->getEvento($idEvento);
 
 // Carrega as contagens
-$quantidadeLeitores = $modeloLeitores->getQuantidadeLeitores($idEvento);
-$quantidadeSetores = $modeloSetores->getQuantidadeSetores($idEvento);
+$quantidadeLeitores = 0; //$modeloLeitores->getQuantidadeLeitores($idEvento);
+$quantidadeSetores = 0; //$modeloSetores->getQuantidadeSetores($idEvento);
 $quantidadeCredenciais = 0; //$modeloCredenciais->getQuantidadeCredenciais($idEvento);
 $quantidadeIngressos = 0; //$modeloIngressos->getQuantidadeIngressos($idEvento);
 
