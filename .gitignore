@@ -1,6 +1,8 @@
 config.php
 midia/eventos/*
 midia/pessoas/*
+midia/acessos/*
+midia/pessoas.zip
 logs/*
 
 views/standards/*
